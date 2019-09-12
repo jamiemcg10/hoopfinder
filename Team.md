@@ -15,4 +15,8 @@ Security Leader -
 Hi All, 
 I am originally from India but did my undergrad in Singapore and have lived/worked there for the past 4 years. I have about 4 years of experience in IT consulting mainly working with HRIT systems. I am extremely confortable using Java, SQL, and Python. I have also worked on an android development to create a e-reader for a SME publishing house. 
 
+#### Mike Zhong:
+
+Hello, I graduated with a B.S in Mathematics and minor in Biochemistry and Molecular Biology from Umass Amherst. I am currently working at Gritstone Oncology as a Bioinformatics Scientist where I oversee the development, maintenance, and operation of our production software and systems in support of our phase I clinical trial. Our leading product is a personalized cancer vaccine. I am comfortable with C/C++, PHP, R, and Python, as well as workflow definition languages like Nextflow and CWL. 
+
 
