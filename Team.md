@@ -19,4 +19,5 @@ I am originally from India but did my undergrad in Singapore and have lived/work
 
 Hello, I graduated with a B.S in Mathematics and minor in Biochemistry and Molecular Biology from Umass Amherst. I am currently working at Gritstone Oncology as a Bioinformatics Scientist where I oversee the development, maintenance, and operation of our production software and systems in support of our phase I clinical trial. Our leading product is a personalized cancer vaccine. I am comfortable with C/C++, PHP, R, and Python, as well as workflow definition languages like Nextflow and CWL. 
 
-
+### Jamie Smart
+I graduated from Dartmouth College with a psychology degree in 2010. I currently work as a data analyst at a market research firm in Downtown Boston. I am currently in my first year in the computer science graduate program at Boston University's Metropolitan College, and knows Python and Java.
