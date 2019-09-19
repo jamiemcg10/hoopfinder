@@ -14,4 +14,4 @@ The project repisitory is on: [Github](https://github.com/bumetcs673f19/cs673-pr
 
    *Duoyao* is a *1st* year graduate student at *BU* and he has several projects on Web development and AI Algorithms.
 
- **Social:** [GitHub Pages](https://github.com/zever4ever/Zever/)
+    *Social:* [GitHub Pages](https://github.com/zever4ever/Zever/)
