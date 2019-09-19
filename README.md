@@ -44,5 +44,10 @@ I graduated from Dartmouth College with a psychology degree in 2010. I currently
 #### Duoyao
 is a *1st* year graduate student at *BU* and he has several project on Web development and AI Algorithm.
 
+#### Sriram Ramdoss
+My major is **Computer Science** and this is my first semester in **BU**. This is my GitHub **[Profile](https://github.com/srambtech)**
+
+*Nice to Meet you All*
+
 **Social:** [GitHub Pages](https://github.com/zever4ever/Zever/)
 
