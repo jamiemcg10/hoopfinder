@@ -11,5 +11,7 @@ The project repisitory is on: [Github](https://github.com/bumetcs673f19/cs673-pr
 - Saloni Rawat — 
 
 - Duoyao Zhang — Security Lead, Frontend Dev
+
 **Duoyao** is a *1st* year graduate student at *BU* and he has several project on Web development and AI Algorithm.
-    -**Social:** [GitHub Pages](https://github.com/zever4ever/Zever/)
+
+**Social:** [GitHub Pages](https://github.com/zever4ever/Zever/)
