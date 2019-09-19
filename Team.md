@@ -21,3 +21,4 @@ Hello, I graduated with a B.S in Mathematics and minor in Biochemistry and Molec
 
 ### Jamie Smart
 I graduated from Dartmouth College with a psychology degree in 2010. I currently work as a data analyst at a market research firm in Downtown Boston. I am currently in my first year in the computer science graduate program at Boston University's Metropolitan College, and knows Python and Java.
+
