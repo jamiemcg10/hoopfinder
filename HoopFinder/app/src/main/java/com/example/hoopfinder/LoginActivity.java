@@ -1,31 +1,18 @@
 package com.example.hoopfinder;
 
-import android.app.Activity;
-
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-
+import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.hoopfinder.R;
 
-
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     //private LoginViewModel loginViewModel;
 
@@ -41,32 +28,62 @@ public class LoginActivity extends AppCompatActivity {
         //loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory().get(LoginViewModel.class);
 
         // create variables for the data entered.
-        int counter;
+
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
         loginButton = findViewById(R.id.login);
         loadingBar = findViewById(R.id.loading);
 
+
+        loginButton.setOnClickListener(this);
+
+
+        /**
+         * For Sign in Button
+         */
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(username.getText().toString().equals("admin") &&
+                int counter = 3;
+                if (username.getText().toString().equals("admin") &&
                         password.getText().toString().equals("admin")) {
                     Toast.makeText(getApplicationContext(),
-                            "Redirecting...",Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(getApplicationContext(), "Wrong Credentials",Toast.LENGTH_SHORT).show();
+                            "Redirecting...", Toast.LENGTH_SHORT).show();
 
-                            tx1.setVisibility(View.VISIBLE);
-                    tx1.setBackgroundColor(Color.RED);
+                    Intent launchActivity1 = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(launchActivity1);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Wrong Credentials", Toast.LENGTH_SHORT).show();
+
+                    //tx1.setVisibility(View.VISIBLE);
+                    //tx1.setBackgroundColor(Color.RED);
                     counter--;
-                    tx1.setText(Integer.toString(counter));
+//                    //tx1.setText(Integer.toString(counter));
 
                     if (counter == 0) {
-                        b1.setEnabled(false);
+                        loginButton.setEnabled(false);
                     }
                 }
             }
-        }
+        });
+
+        /**
+         * For Sign up Button
+         */
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                    Intent launchActivity1 = new Intent(LoginActivity.this, SignupActivity.class);
+                    startActivity(launchActivity1);
+
+            }
+        });
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }
