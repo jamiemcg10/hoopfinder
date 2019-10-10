@@ -163,8 +163,8 @@ public class MainActivity extends AppCompatActivity
         double proximityThreshold = 50.0;
         testLocation.setLongitude(testLongitude);
         testLocation.setLatitude(testLatitude);
-        String testMobile = "9788888957";
-        String testMessage = "Proximity Alert!";
+        String testMobile = ""; // fill out if you want to test SMS
+        String testMessage = "Proximity Alert!"; // SMS message text
 
 
         float distanceInMeters =  testLocation.distanceTo(location);
