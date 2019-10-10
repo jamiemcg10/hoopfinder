@@ -2,12 +2,10 @@ package com.example.hoopfinder;
 
 import android.Manifest;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.telephony.SmsManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,13 +24,12 @@ import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity
+public class UserLocationActivity extends AppCompatActivity
         implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener{
 
     private Location location;
     private TextView locationTv;
-    private TextView proximityTv;
     private GoogleApiClient googleApiClient;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private LocationRequest locationRequest;
@@ -50,11 +47,9 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         locationTv = findViewById(R.id.location);
-        proximityTv = findViewById(R.id.proximity);
         // we add permissions we need to request location of the users
         permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
         permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        permissions.add(Manifest.permission.SEND_SMS);
 
         permissionsToRequest = permissionsToRequest(permissions);
 
@@ -154,35 +149,6 @@ public class MainActivity extends AppCompatActivity
             locationTv.setText("Latitude : " + location.getLatitude() + "\nLongitude : " + location.getLongitude());
         }
 
-        Location testLocation = new Location("");
-
-
-        // test vars for now
-        double testLongitude = -71.0419958;
-        double testLatitude = 42.4346594;
-        double proximityThreshold = 50.0;
-        testLocation.setLongitude(testLongitude);
-        testLocation.setLatitude(testLatitude);
-        String testMobile = "9788888957";
-        String testMessage = "Proximity Alert!";
-
-
-        float distanceInMeters =  testLocation.distanceTo(location);
-
-        if (distanceInMeters < proximityThreshold) {
-            proximityTv.setText("You are close : " + distanceInMeters + " meters away ");
-
-            /* SENDING TEXT IS WORKING
-            SmsManager smgr = SmsManager.getDefault();
-            smgr.sendTextMessage(testMobile,null,testMessage,null,null);
-             */
-
-        }
-        else {
-            proximityTv.setText("You are not close : " + distanceInMeters + " meters away");
-        }
-
-
         startLocationUpdates();
     }
 
@@ -215,9 +181,6 @@ public class MainActivity extends AppCompatActivity
         if (location != null) {
             locationTv.setText("Latitude : " + location.getLatitude() + "\nLongitude : " + location.getLongitude());
         }
-
-        // on location change, we can fetch a list of subscribed locations from court table
-        // and send alert to all subscribed individual
     }
 
     @Override
@@ -233,7 +196,7 @@ public class MainActivity extends AppCompatActivity
                 if (permissionsRejected.size() > 0) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         if (shouldShowRequestPermissionRationale(permissionsRejected.get(0))) {
-                            new AlertDialog.Builder(MainActivity.this).
+                            new AlertDialog.Builder(UserLocationActivity.this).
                                     setMessage("These permissions are mandatory to get your location. You need to allow them.").
                                     setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         @Override
@@ -257,4 +220,8 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
     }
+
+
 }
+
+
