@@ -70,6 +70,10 @@ public class MainActivity extends AppCompatActivity
                 addApi(LocationServices.API).
                 addConnectionCallbacks(this).
                 addOnConnectionFailedListener(this).build();
+
+
+        sendNotification("17736414066", "notification");
+
     }
 
     private ArrayList<String> permissionsToRequest(ArrayList<String> wantedPermissions) {
@@ -257,4 +261,11 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
     }
+
+    public void sendNotification(String phoneNumber, String message){
+        SmsManager smgr = SmsManager.getDefault();
+        smgr.sendTextMessage(phoneNumber,null,message,null,null);
+
+    }
+
 }
