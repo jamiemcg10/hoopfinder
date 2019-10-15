@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">HoopFinder</string>
     <string name="button_start_service">Start Service</string>
+
+    <string name="facebook_app_id">405038503399661</string>
+    <string name="fb_login_protocol_scheme">fb405038503399661</string>
 </resources>
