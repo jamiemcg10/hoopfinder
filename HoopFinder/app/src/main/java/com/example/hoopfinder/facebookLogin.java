@@ -2,12 +2,14 @@ package com.example.hoopfinder;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -20,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+
 
 public class facebookLogin extends AppCompatActivity {
     private LoginButton loginButton;
@@ -51,9 +54,12 @@ public class facebookLogin extends AppCompatActivity {
             }
             @Override
             public void onCancel() {
+                Log.d("Cancel", "Login attempt cancelled.");
             }
             @Override
             public void onError(FacebookException error) {
+                error.printStackTrace();
+                Log.d("Error", "Login attempt failed.");
             }
 
         });
@@ -96,5 +102,8 @@ public class facebookLogin extends AppCompatActivity {
         // Initiate the GraphRequest
         request.executeAsync();
     }
+
+
+
 }
 

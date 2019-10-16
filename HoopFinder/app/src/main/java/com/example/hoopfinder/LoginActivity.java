@@ -12,13 +12,16 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 
+
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     //private LoginViewModel loginViewModel;
 
     EditText username, password;
-    Button loginButton;
+    Button btn_sign_up;
+    Button btn_log_in;
     ProgressBar loadingBar;
+
 
 
     @Override
@@ -31,17 +34,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         username = findViewById(R.id.username);
         password = findViewById(R.id.password);
-        loginButton = findViewById(R.id.login);
+        btn_sign_up = findViewById(R.id.sign_up);
+        btn_log_in =findViewById(R.id.login);
         loadingBar = findViewById(R.id.loading);
 
 
-        loginButton.setOnClickListener(this);
+        btn_sign_up.setOnClickListener(this);
 
 
         /**
          * For Sign in Button
          */
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        btn_log_in.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int counter = 3;
@@ -61,7 +65,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //                    //tx1.setText(Integer.toString(counter));
 
                     if (counter == 0) {
-                        loginButton.setEnabled(false);
+                        btn_sign_up.setEnabled(false);
                     }
                 }
             }
@@ -70,7 +74,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         /**
          * For Sign up Button
          */
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        btn_sign_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
