@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity
                 addOnConnectionFailedListener(this).build();
 
 
-        sendNotification("17736414066", "notification");
+        // sendNotification("17736414066", "notification"); // not needed
 
     }
 
@@ -162,8 +162,8 @@ public class MainActivity extends AppCompatActivity
 
 
         // test vars for now
-        double testLongitude = -71.0419958;
-        double testLatitude = 42.4346594;
+        double testLongitude = -71.0964750;
+        double testLatitude = 42.3815890;
         double proximityThreshold = 50.0;
         testLocation.setLongitude(testLongitude);
         testLocation.setLatitude(testLatitude);
@@ -188,6 +188,8 @@ public class MainActivity extends AppCompatActivity
 
 
         startLocationUpdates();
+
+        onProximityCheck();
     }
 
     private void startLocationUpdates() {
@@ -265,6 +267,35 @@ public class MainActivity extends AppCompatActivity
     public void sendNotification(String phoneNumber, String message){
         SmsManager smgr = SmsManager.getDefault();
         smgr.sendTextMessage(phoneNumber,null,message,null,null);
+
+    }
+
+    public Court[] createTestDB() {
+        Court court1 = new Court(1, "court 1", 42.381073, -71.095794);
+        Court court2 = new Court(1, "court 1", 42.381532, -71.096559);
+        Court[] courts = new Court[2];
+        courts[0] = court1;
+        courts[1] = court2;
+
+        return courts;
+}
+
+    public void onProximityCheck(){
+        location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+
+
+        Court[] testDB = createTestDB();
+
+        for (int i=0; i<testDB.length; i++) {
+            Location courtLocation = new Location("");
+            courtLocation.setLatitude(testDB[i].getLatitude());
+            courtLocation.setLongitude(testDB[i].getLongitude());
+            float distanceInMeters =  courtLocation.distanceTo(location);
+
+            if (distanceInMeters < 50){
+                sendNotification("17736414066","A user is close to " + testDB[i].getName());
+            }
+        }
 
     }
 
