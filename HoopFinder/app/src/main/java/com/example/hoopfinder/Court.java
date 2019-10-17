@@ -1,6 +1,8 @@
 package com.example.hoopfinder;
 
 public class Court {
+    // test class for holding court information until database is created
+
     private int id;
     private String name;
     private double longitude;
