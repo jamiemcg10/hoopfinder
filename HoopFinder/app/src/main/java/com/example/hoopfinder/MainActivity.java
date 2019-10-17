@@ -1,7 +1,6 @@
 package com.example.hoopfinder;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -64,8 +63,6 @@ public class MainActivity extends AppCompatActivity
         permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
         permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         permissions.add(Manifest.permission.SEND_SMS);
-        permissions.add(Manifest.permission.INTERNET);
-        permissions.add(Manifest.permission.READ_PHONE_STATE);
 
         permissionsToRequest = permissionsToRequest(permissions);
 
@@ -173,12 +170,12 @@ public class MainActivity extends AppCompatActivity
 
 
         // test vars for now
-        double testLongitude = -71.103703;  // -71.0964750;
-        double testLatitude = 42.348775;  // 42.3815890;
+        double testLongitude = -71.0964750;
+        double testLatitude = 42.3815890;
         double proximityThreshold = 50.0;
         testLocation.setLongitude(testLongitude);
         testLocation.setLatitude(testLatitude);
-        String testMobile = "17736414066"; // fill out if you want to test SMS
+        String testMobile = ""; // fill out if you want to test SMS
         String testMessage = "Proximity Alert!"; // SMS message text
 
 
@@ -187,10 +184,10 @@ public class MainActivity extends AppCompatActivity
         if (distanceInMeters < proximityThreshold) {
             proximityTv.setText("You are close : " + distanceInMeters + " meters away ");
 
-            /* SENDING TEXT IS WORKING */
+            /* SENDING TEXT IS WORKING
             SmsManager smgr = SmsManager.getDefault();
             smgr.sendTextMessage(testMobile,null,testMessage,null,null);
-
+             */
 
         }
         else {
@@ -318,31 +315,12 @@ public class MainActivity extends AppCompatActivity
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 // Getting a court failed
                 Log.w(TAG, "loadCourt:onCancelled", databaseError.toException());
+
             }
         };
 
         dbCourts.addValueEventListener(courtListener);
 
-    }
-
-    public String getUserPhoneNumber() {
-        TelephonyManager tMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
-
-            @Nullable String mPhoneNumber = tMgr.getLine1Number(); // todo check permissions for READ PHONE STATE
-
-            if (mPhoneNumber != null) {
-                return mPhoneNumber;
-            } else {
-                return "no phone number, do something instead";
-            }
-        }
-        else {
-            Toast.makeText(this, "You need to enable permissions to get phone number!", Toast.LENGTH_SHORT).show();
-            return "need permissions";
-        }
     }
 
 }
