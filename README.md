@@ -1,24 +1,53 @@
-# CS673F19project: Your Project Title
-This is the project repository for BU 2019 Fall MET CS 673 Team1. 
-The project repisitory is on: [Github](https://github.com/bumetcs673f19/cs673-project-team-1#team)
-## Technogloy Used 
-List all technolgy stack used
+# CS673F19project: HoopFinder
+
+Our project is an Android application that uses user location data to send notifications to subscribers when a registered user approaches the vicinity of some known locations.
+
+## Technology Used 
+
+* Android development in Java and Kotlin
+* Android Studio IDE
+
 ## Main Features
-List all major features 
+
+* User registration and subscription to locations or other users
+* Queries user location data as a service or activity on some scheduled interval
+* Reads database of known locations
+* Sends notifications when registered users approach known locations
+
 ## Installation or Deployment
-Describe how to install or depoly the application
+
+Android APK
+
 ## Team
-- **Mike Zhong** — Project Leader
+Briefly introduce your team
 
-- **Sriram** — Requirement Leader
+Team Leader - Saloni Rawat<br>
+Backup Team Leader - Mike Zhong<br>
+Requirement Leader - Sriram Ramdoss<br>
+Design and Implementation Leader - Mike Zhong <br>
+QA Leader - Jamie Smart<br>
+Configuration Leader - Saloni Rawat<br>
+Security Leader - Duoyao Zhang<br>
 
-- **Jamin Smart** — Backup Leader, Requirement Leader
+## Team members
+#### Saloni Rawat: 
+Hi All, 
+I am originally from India but did my undergrad in Singapore and have lived/worked there for the past 4 years. I have about 4 years of experience in IT consulting mainly working with HRIT systems. I am extremely confortable using Java, SQL, and Python. I have also worked on an android development to create a e-reader for a SME publishing house. 
 
-- **Saloni Rawat** — Configuration Leader
+#### Mike Zhong:
+Hello, I graduated with a B.S in Mathematics and minor in Biochemistry and Molecular Biology from Umass Amherst. I am currently working at Gritstone Oncology as a Bioinformatics Scientist where I oversee the development, maintenance, and operation of our production software and systems in support of our phase I clinical trial. Our leading product is a personalized cancer vaccine. I am comfortable with C/C++, PHP, R, and Python, as well as workflow definition languages like Nextflow and CWL. 
 
-- **Duoyao Zhang** — Security Lead, Frontend Dev
 
-*Duoyao* is a *1st* year graduate student at *BU* and he has several projects on Web development and AI Algorithms.
+#### Jamie Smart
+I graduated from Dartmouth College with a psychology degree in 2010. I currently work as a data analyst at a market research firm in Downtown Boston. I am currently in my first year in the computer science graduate program at Boston University's Metropolitan College, and knows Python and Java.
 
-*Social:* [GitHub Pages](https://github.com/zever4ever/Zever/)
+#### Duoyao
+is a *1st* year graduate student at *BU* and he has several project on Web development and AI Algorithm.
+
+#### Sriram Ramdoss
+My major is **Computer Science** and this is my first semester in **BU**. This is my GitHub **[Profile](https://github.com/srambtech)**
+
+*Nice to Meet you All*
+
+**Social:** [GitHub Pages](https://github.com/zever4ever/Zever/)
 
