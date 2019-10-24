@@ -25,6 +25,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -45,7 +47,7 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<String> permissions = new ArrayList<>();
     // integer for permissions results request
     private static final int ALL_PERMISSIONS_RESULT = 1011;
-
+    private DatabaseReference db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,6 +196,12 @@ public class MainActivity extends AppCompatActivity
         startLocationUpdates();
 
         onProximityCheck();
+
+
+        db = FirebaseDatabase.getInstance().getReference();
+        db.child("Courts").child("cc").child("name").setValue("Classroom court");
+        db.child("Courts").child("cc").child("latitude").setValue(42.348775);
+        db.child("Courts").child("cc").child("longitude").setValue(-71.10370);
     }
 
     private void startLocationUpdates() {
