@@ -51,6 +51,7 @@ public class facebookLogin extends AppCompatActivity {
                 // Retrieving access token using the LoginResult
                 AccessToken accessToken = loginResult.getAccessToken();
                 useLoginInformation(accessToken);
+
                 Intent launchActivity1 = new Intent(facebookLogin.this, MainActivity.class);
                 startActivity(launchActivity1);
             }

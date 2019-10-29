@@ -8,6 +8,10 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+
+import android.telephony.TelephonyManager;
+import android.util.Log;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +27,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -43,6 +52,7 @@ public class MainActivity extends AppCompatActivity
     private ArrayList<String> permissions = new ArrayList<>();
     // integer for permissions results request
     private static final int ALL_PERMISSIONS_RESULT = 1011;
+    private final String TAG = "com.example.hoopfinder";
 
 
     @Override
@@ -72,7 +82,7 @@ public class MainActivity extends AppCompatActivity
                 addOnConnectionFailedListener(this).build();
 
 
-        // sendNotification("17736414066", "notification"); // not needed
+
 
     }
 
@@ -190,6 +200,7 @@ public class MainActivity extends AppCompatActivity
         startLocationUpdates();
 
         onProximityCheck();
+
     }
 
     private void startLocationUpdates() {
@@ -264,38 +275,53 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * This method sends a text notification with a specified message to a specified phone number
+     * @param phoneNumber The number the text will be sent to
+     * @param message The message that will be sent
+     * @returns nothing
+     */
     public void sendNotification(String phoneNumber, String message){
         SmsManager smgr = SmsManager.getDefault();
         smgr.sendTextMessage(phoneNumber,null,message,null,null);
 
     }
 
-    public Court[] createTestDB() {
-        Court court1 = new Court(1, "court 1", 42.381073, -71.095794);
-        Court court2 = new Court(1, "court 1", 42.381532, -71.096559);
-        Court[] courts = new Court[2];
-        courts[0] = court1;
-        courts[1] = court2;
-
-        return courts;
-}
 
     public void onProximityCheck(){
+        // CHECK PROXIMITY TO COURTS
         location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
+        DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
 
-        Court[] testDB = createTestDB();
+        ValueEventListener courtListener = new ValueEventListener() {
+            // DATABASE CAN ONLY BE READ THROUGH LISTENERS
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
+                for (DataSnapshot child : dataSnapshot.getChildren()){
+                    Court court = child.getValue(Court.class);
+                    Location courtLocation = new Location("");
+                    courtLocation.setLatitude(court.getLatitude());
+                    courtLocation.setLongitude(court.getLongitude());
+                    float distanceInMeters =  courtLocation.distanceTo(location);
 
-        for (int i=0; i<testDB.length; i++) {
-            Location courtLocation = new Location("");
-            courtLocation.setLatitude(testDB[i].getLatitude());
-            courtLocation.setLongitude(testDB[i].getLongitude());
-            float distanceInMeters =  courtLocation.distanceTo(location);
-
-            if (distanceInMeters < 50){
-                sendNotification("17736414066","A user is close to " + testDB[i].getName());
+                    if (distanceInMeters < 50){
+                        // NEEDS UPDATE - NEEDS TO SEND NOTIFICATION TO ALL SUBSCRIBED USERS, NOT JUST ONE PHONE NUMBER
+                        sendNotification("17736414066","A user is close to " + court.getName());
+                    }
+                }
             }
-        }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Getting a court failed
+                Log.w(TAG, "loadCourt:onCancelled", databaseError.toException());
+
+            }
+        };
+
+        dbCourts.addValueEventListener(courtListener);
 
     }
 
