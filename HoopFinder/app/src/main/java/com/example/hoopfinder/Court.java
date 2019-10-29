@@ -28,7 +28,7 @@ public class Court {
     }
 
     /**
-     * Constructor to create a court]
+     * Constructor to create a court
      * @param name This is the name of the court
      * @param latitude This is the latitude of the court
      * @param longitude This is the longitude of the court
@@ -53,7 +53,7 @@ public class Court {
 
 
     /**
-     * This method adds a court to the database. Illegal characters will be automatically removed from the name
+     * Adds a court to the database. Illegal characters will be automatically removed from the name
      * @param name The name of the court
      * @param latitude The court's latitude
      * @param longitude The court's longitude
@@ -78,7 +78,7 @@ public class Court {
     }
 
     /**
-     * This method adds a set of pre-defined courts to the database
+     * Adds a set of pre-defined courts to the database
      * @return nothing
      */
     public static void batchAddCourts(){
