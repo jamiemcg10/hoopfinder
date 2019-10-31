@@ -167,9 +167,14 @@ public class MainActivity extends AppCompatActivity
         if (location != null) {
             locationTv.setText("Latitude : " + location.getLatitude() + "\nLongitude : " + location.getLongitude());
         }
+        else{
+            locationTv.setText("No valid location");
+            Location loc2 = new Location("");
+            loc2.setLongitude(-71.103703);
+            loc2.setLatitude(42.348775);
+        }
 
         Location testLocation = new Location("");
-
 
         // test vars for now
         double testLongitude = -71.0964750;
@@ -181,7 +186,7 @@ public class MainActivity extends AppCompatActivity
         String testMessage = "Proximity Alert!"; // SMS message text
 
 
-        float distanceInMeters =  testLocation.distanceTo(location);
+         float distanceInMeters =  testLocation.distanceTo(location);
 
         if (distanceInMeters < proximityThreshold) {
             proximityTv.setText("You are close : " + distanceInMeters + " meters away ");
