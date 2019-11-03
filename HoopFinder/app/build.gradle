@@ -40,6 +40,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:17.0.0'
     implementation 'androidx.work:work-runtime:2.2.0'
 
+    implementation 'com.google.firebase:firebase-messaging:20.0.0'
 }
 //Firebase Database
 apply plugin: 'com.google.gms.google-services'

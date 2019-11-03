@@ -19,17 +19,21 @@ import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
 
+import com.facebook.internal.WebDialog;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 
 import java.util.ArrayList;
 
@@ -51,6 +55,7 @@ public class MainActivity extends AppCompatActivity
     // integer for permissions results request
     private static final int ALL_PERMISSIONS_RESULT = 1011;
     private final String TAG = "com.example.hoopfinder";
+    private DataSnapshot data;
 
 
     @Override
@@ -306,9 +311,13 @@ public class MainActivity extends AppCompatActivity
 
                     if (distanceInMeters < 50){
                         // NEEDS UPDATE - NEEDS TO SEND NOTIFICATION TO ALL SUBSCRIBED USERS, NOT JUST ONE PHONE NUMBER
-                        sendNotification("17736414066","A user is close to " + court.getName());
+                        sendNotification("17736414066","A user is close to " + court.getName() + court.getSubscribers());
                     }
                 }
+
+                DataSnapshot data = passDataSnapshot(dataSnapshot);
+
+                Court.subscribeToCourt("Walnut Street Park", dataSnapshot);
             }
 
             @Override
@@ -322,5 +331,10 @@ public class MainActivity extends AppCompatActivity
         dbCourts.addValueEventListener(courtListener);
 
     }
+
+    public DataSnapshot passDataSnapshot(DataSnapshot data){
+        return data;
+    }
+
 
 }
