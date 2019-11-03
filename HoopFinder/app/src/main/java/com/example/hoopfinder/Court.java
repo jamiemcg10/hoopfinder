@@ -8,6 +8,7 @@
 
 package com.example.hoopfinder;
 
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -15,66 +16,88 @@ import java.util.regex.Pattern;
 
 public class Court {
 
-    private int id;
     private String name;
     private double longitude;
     private double latitude;
+    private String subscribers;
 
     /**
      * Default contructor. Needed for Firebase data reads.
      */
-    public Court(){
+    public Court() {
 
     }
 
     /**
      * Constructor to create a court
-     * @param name This is the name of the court
-     * @param latitude This is the latitude of the court
+     *
+     * @param name      This is the name of the court
+     * @param latitude  This is the latitude of the court
      * @param longitude This is the longitude of the court
      */
-    public Court(int id, String name, double latitude, double longitude){
-        this.name=name;
-        this.latitude=latitude;
-        this.longitude=longitude;
+    public Court(int id, String name, double latitude, double longitude) {
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.subscribers = "";
     }
 
-    public double getLongitude(){
+    public double getLongitude() {
         return this.longitude;
     }
 
-    public double getLatitude(){
+    public double getLatitude() {
         return this.latitude;
     }
 
-    public String getName(){
+    public String getName() {
         return this.name;
     }
 
+    public String getSubscribers() {
+        return this.subscribers;
+    }
 
     /**
      * Adds a court to the database. Illegal characters will be automatically removed from the name
-     * @param name The name of the court
-     * @param latitude The court's latitude
+     *
+     * @param name      The name of the court
+     * @param latitude  The court's latitude
      * @param longitude The court's longitude
      * @return nothing
      */
-    public static void addCourt(String name, double latitude, double longitude){
+    public static void addCourt(String name, double latitude, double longitude) {
         DatabaseReference db;
 
         // remove characters that are incompatable with database
-        name = name.replaceAll(Pattern.quote("."),"")
-                .replaceAll(Pattern.quote("#"),"")
-                .replaceAll(Pattern.quote("$"),"")
-                .replaceAll(Pattern.quote("["),"")
-                .replaceAll(Pattern.quote("]"),"");
+        name = name.replaceAll(Pattern.quote("."), "")
+                .replaceAll(Pattern.quote("#"), "")
+                .replaceAll(Pattern.quote("$"), "")
+                .replaceAll(Pattern.quote("["), "")
+                .replaceAll(Pattern.quote("]"), "");
 
 
         db = FirebaseDatabase.getInstance().getReference();
         db.child("Courts").child(name).child("name").setValue(name);
         db.child("Courts").child(name).child("latitude").setValue(latitude);
         db.child("Courts").child(name).child("longitude").setValue(longitude);
+        db.child("Courts").child(name).child("subscribed").setValue("");
 
+    }
+
+    // SUBSCRIBE IMPLEMENTATION CAN CHANGE
+    // THIS IS CURRENTLY GETTING SUBSCRIBERS, NOT SUBSCRIBING
+    public static boolean subscribeToCourt(String courtName, DataSnapshot snapshot) {
+        DatabaseReference db;
+        String subscribers = "";
+
+        Court court = snapshot.child(courtName).getValue(Court.class);
+        // POSSIBLY NEED TO HANDLE COURT NAME NOT EXISTING
+        subscribers = court.getSubscribers();
+
+        System.out.println(subscribers);
+
+        return true;
     }
 
     /**
