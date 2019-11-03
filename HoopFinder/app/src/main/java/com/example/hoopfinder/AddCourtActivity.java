@@ -157,7 +157,6 @@ public class AddCourtActivity extends AppCompatActivity
             public void onMapClick(LatLng point) {
                 mMap.clear();
                 mMap.addMarker(new MarkerOptions().position(point));
-
             }
         });
 
