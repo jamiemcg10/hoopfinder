@@ -1,9 +1,16 @@
 package com.example.hoopfinder;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
+import androidx.annotation.Nullable;
+import android.content.pm.PackageManager;
+
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -35,9 +42,12 @@ public class SignupActivity extends AppCompatActivity {
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String psswrd1, psswrd2;
+                String psswrd1, psswrd2, phoneNumber;
                 psswrd1= password.getText().toString();
                 psswrd2 = password2.getText().toString();
+
+                String mPhoneNumber = getUserPhoneNumber();
+
                 if (!(psswrd1.equals(psswrd2))) {
                     Log.d(psswrd1, "onClick:password 2: "+ psswrd2);
                     Toast.makeText(getApplicationContext(),
@@ -67,6 +77,26 @@ public class SignupActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public String getUserPhoneNumber() {
+        TelephonyManager tMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+
+            @Nullable String mPhoneNumber = tMgr.getLine1Number(); // todo check permissions for READ PHONE STATE
+
+            if (mPhoneNumber != null) {
+                return mPhoneNumber;
+            } else {
+                return "no phone number, do something instead";
+            }
+        }
+        else {
+            Toast.makeText(this, "You need to enable permissions to get phone number!", Toast.LENGTH_SHORT).show();
+            return "need permissions";
+        }
     }
 
     private void addUser(){
