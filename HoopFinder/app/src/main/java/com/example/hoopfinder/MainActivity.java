@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
+import androidx.room.Database;
 
 import com.facebook.internal.WebDialog;
 import com.google.android.gms.common.ConnectionResult;
@@ -30,6 +31,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -87,9 +89,7 @@ public class MainActivity extends AppCompatActivity
                 addOnConnectionFailedListener(this).build();
 
 
-
-
-    }
+    }    // end onCreate
 
     private ArrayList<String> permissionsToRequest(ArrayList<String> wantedPermissions) {
         ArrayList<String> result = new ArrayList<>();
@@ -175,6 +175,8 @@ public class MainActivity extends AppCompatActivity
 
         Location testLocation = new Location("");
 
+        // add court at GSU
+        Court.addCourt("GSU", 42.350661, -71.108064);
 
         // test vars for now
         double testLongitude = -71.0964750;
@@ -184,6 +186,9 @@ public class MainActivity extends AppCompatActivity
         testLocation.setLatitude(testLatitude);
         String testMobile = ""; // fill out if you want to test SMS
         String testMessage = "Proximity Alert!"; // SMS message text
+        // TEST USER FOR newUserAtSubscribedCourtCheck() BUILDING AND TESTING
+        User testUser = new User("jsmart", "jamie@bu.edu", "password", "GSU,");
+
 
 
         float distanceInMeters =  testLocation.distanceTo(location);
@@ -203,8 +208,9 @@ public class MainActivity extends AppCompatActivity
 
 
         startLocationUpdates();
-
         onProximityCheck();
+        System.out.println("before newUserAtSub...");
+        newUserAtSubscribedCourtCheck(testUser);
 
     }
 
@@ -313,7 +319,7 @@ public class MainActivity extends AppCompatActivity
 
                     if (distanceInMeters < 50){
                         // NEEDS UPDATE - NEEDS TO SEND NOTIFICATION TO ALL SUBSCRIBED USERS, NOT JUST ONE PHONE NUMBER
-                        sendNotification("17736414066","A user is close to " + court.getName() + court.getSubscribers());
+                        sendNotification("17736414066","A user is close to " + court.getName());
                     }
                 }
 
@@ -321,6 +327,7 @@ public class MainActivity extends AppCompatActivity
 
                 Court.subscribeToCourt("Walnut Street Park", dataSnapshot);
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -331,6 +338,44 @@ public class MainActivity extends AppCompatActivity
         };
 
         dbCourts.addValueEventListener(courtListener);
+
+    }
+
+    // read db to see if another user is close to a court
+    public void newUserAtSubscribedCourtCheck(final User currentUser){
+        // 0) get list of courts user is subscribed to - change to a firebase database reference when users can subscribe to courts
+        String subscribedCourts = "GSU,";
+
+        // 1) read db info of courts
+        DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
+
+        ChildEventListener listenerForNewUsersAtCourts = new ChildEventListener() {
+            // DATABASE CAN ONLY BE READ THROUGH LISTENERS
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String childName) {
+                // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
+                Court court = dataSnapshot.getValue(Court.class);
+                if (currentUser.getCourtsSubscribedTo().indexOf(court.getName()) >= 0) {   // user subscribed to court that changed
+                    sendNotification("17736414066","newUserSubscribedCourtCheck");
+                }
+
+            }
+
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+
+        };
+
+        dbCourts.addChildEventListener(listenerForNewUsersAtCourts);
 
     }
 

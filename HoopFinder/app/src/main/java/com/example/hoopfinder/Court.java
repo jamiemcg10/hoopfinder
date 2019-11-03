@@ -20,6 +20,7 @@ public class Court {
     private double longitude;
     private double latitude;
     private String subscribers;
+    private String usersAtCourt;
 
     /**
      * Default contructor. Needed for Firebase data reads.
@@ -40,6 +41,7 @@ public class Court {
         this.latitude = latitude;
         this.longitude = longitude;
         this.subscribers = "";
+        this.usersAtCourt = "";
     }
 
     public double getLongitude() {
@@ -57,6 +59,8 @@ public class Court {
     public String getSubscribers() {
         return this.subscribers;
     }
+
+    public String getUsersAtCourt() { return this.usersAtCourt; }
 
     /**
      * Adds a court to the database. Illegal characters will be automatically removed from the name
@@ -81,7 +85,8 @@ public class Court {
         db.child("Courts").child(name).child("name").setValue(name);
         db.child("Courts").child(name).child("latitude").setValue(latitude);
         db.child("Courts").child(name).child("longitude").setValue(longitude);
-        db.child("Courts").child(name).child("subscribed").setValue("");
+        db.child("Courts").child(name).child("subscribers").setValue("");
+        db.child("Courts").child(name).child("usersAtCourt").setValue("");
 
     }
 
