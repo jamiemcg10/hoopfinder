@@ -44,6 +44,6 @@ public class AddUserToCourtTimer extends TimerTask {
         System.out.println("20 second timer has ENDED");
 
         db = FirebaseDatabase.getInstance().getReference();
-        db.child("Courts").child(courtName).child("usersAtCourt").setValue(currentUsersAtCourt + user.getUser_id());
+        db.child("Courts").child(courtName).child("usersAtCourt").setValue(currentUsersAtCourt + "," + user.getUser_id());
     }
 }
