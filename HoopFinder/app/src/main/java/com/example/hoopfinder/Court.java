@@ -8,18 +8,22 @@
 
 package com.example.hoopfinder;
 
+import androidx.room.Database;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.regex.Pattern;
 
+/**
+ * Controls the structure for courts and allows for courts to be added to and removed from database
+ */
 public class Court {
 
     private String name;
     private double longitude;
     private double latitude;
-    private String subscribers;
     private String usersAtCourt;
 
     /**
@@ -40,35 +44,16 @@ public class Court {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.subscribers = "";
         this.usersAtCourt = "";
     }
 
-    public double getLongitude() {
-        return this.longitude;
-    }
-
-    public double getLatitude() {
-        return this.latitude;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public String getSubscribers() {
-        return this.subscribers;
-    }
-
-    public String getUsersAtCourt() { return this.usersAtCourt; }
 
     /**
      * Adds a court to the database. Illegal characters will be automatically removed from the name
      *
-     * @param name      The name of the court
+     * @param name      The name of the court to be added
      * @param latitude  The court's latitude
      * @param longitude The court's longitude
-     * @return nothing
      */
     public static void addCourt(String name, double latitude, double longitude) {
         DatabaseReference db;
@@ -90,19 +75,14 @@ public class Court {
 
     }
 
-    // SUBSCRIBE IMPLEMENTATION CAN CHANGE
-    // THIS IS CURRENTLY GETTING SUBSCRIBERS, NOT SUBSCRIBING
-    public static boolean subscribeToCourt(String courtName, DataSnapshot snapshot) {
+    /**
+     * Deletes a court from the database
+     * @param name The name of the court to remove from the database
+     */
+    public static void deleteCourt(String name){
         DatabaseReference db;
-        String subscribers = "";
-
-        Court court = snapshot.child(courtName).getValue(Court.class);
-        // POSSIBLY NEED TO HANDLE COURT NAME NOT EXISTING
-        subscribers = court.getSubscribers();
-
-        System.out.println(subscribers);
-
-        return true;
+        db = FirebaseDatabase.getInstance().getReference();
+        db.child("Courts").child(name).removeValue();
     }
 
     /**
@@ -131,5 +111,18 @@ public class Court {
         addCourt("Classroom", 42.348775, -71.103703);
     }
 
+    public double getLongitude() {
+        return this.longitude;
+    }
+
+    public double getLatitude() {
+        return this.latitude;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getUsersAtCourt() { return this.usersAtCourt; }
 
 }
