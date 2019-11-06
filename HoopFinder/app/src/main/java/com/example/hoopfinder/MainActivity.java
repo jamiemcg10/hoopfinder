@@ -1,6 +1,9 @@
 package com.example.hoopfinder;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -59,7 +62,8 @@ public class MainActivity extends AppCompatActivity
     // integer for permissions results request
     private static final int ALL_PERMISSIONS_RESULT = 1011;
     private final String TAG = "com.example.hoopfinder";
-    private DataSnapshot data;
+    private static Context context;
+    private User testUser;  // THIS WILL EVENTUALLY NEED TO BE THE ACTUAL USER
 
 
     @Override
@@ -72,6 +76,8 @@ public class MainActivity extends AppCompatActivity
         permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
         permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         permissions.add(Manifest.permission.SEND_SMS);
+
+        MainActivity.context = getApplicationContext();// save context to use elsewhere
 
         permissionsToRequest = permissionsToRequest(permissions);
 
@@ -186,8 +192,8 @@ public class MainActivity extends AppCompatActivity
         testLocation.setLatitude(testLatitude);
         String testMobile = ""; // fill out if you want to test SMS
         String testMessage = "Proximity Alert!"; // SMS message text
-        // TEST USER FOR newUserAtSubscribedCourtCheck() BUILDING AND TESTING
-        User testUser = new User("jsmart", "jamie@bu.edu", "password", "GSU,");
+        // should eventually be actual app user
+        testUser = new User("jsmart", "jamie@bu.edu", "password", "GSU,Walnut Street Park");
 
 
 
@@ -196,11 +202,6 @@ public class MainActivity extends AppCompatActivity
         if (distanceInMeters < proximityThreshold) {
             proximityTv.setText("You are close : " + distanceInMeters + " meters away ");
 
-            /* SENDING TEXT IS WORKING
-            SmsManager smgr = SmsManager.getDefault();
-            smgr.sendTextMessage(testMobile,null,testMessage,null,null);
-             */
-
         }
         else {
             proximityTv.setText("You are not close : " + distanceInMeters + " meters away");
@@ -208,9 +209,8 @@ public class MainActivity extends AppCompatActivity
 
 
         startLocationUpdates();
-        onProximityCheck();
-        System.out.println("before newUserAtSub...");
-        newUserAtSubscribedCourtCheck(testUser);
+        proximityCheck();
+        newUserAtSubscribedCourtCheck();
 
     }
 
@@ -286,48 +286,51 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+//    /**
+//     * This method sends a text notification with a specified message to a specified phone number
+//     * @param phoneNumber The number the text will be sent to
+//     * @param message The message that will be sent
+//     * @returns nothing
+//     */
+//    public void sendText(String phoneNumber, String message){
+//        SmsManager smgr = SmsManager.getDefault();
+//        smgr.sendTextMessage(phoneNumber,null,message,null,null);
+//
+//    }
+
+
     /**
-     * This method sends a text notification with a specified message to a specified phone number
-     * @param phoneNumber The number the text will be sent to
-     * @param message The message that will be sent
-     * @returns nothing
+     * Checks to see if the current user is close to a court
      */
-    public void sendNotification(String phoneNumber, String message){
-        SmsManager smgr = SmsManager.getDefault();
-        smgr.sendTextMessage(phoneNumber,null,message,null,null);
-
-    }
-
-
-    public void onProximityCheck(){
+    public void proximityCheck(){
         // CHECK PROXIMITY TO COURTS
         location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
         DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
-
         ValueEventListener courtListener = new ValueEventListener() {
             // DATABASE CAN ONLY BE READ THROUGH LISTENERS
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
-                for (DataSnapshot child : dataSnapshot.getChildren()){
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Court court = child.getValue(Court.class);
                     Location courtLocation = new Location("");
                     courtLocation.setLatitude(court.getLatitude());
                     courtLocation.setLongitude(court.getLongitude());
-                    float distanceInMeters =  courtLocation.distanceTo(location);
+                    float distanceInMeters = courtLocation.distanceTo(location);
 
-                    if (distanceInMeters < 50){
-                        // NEEDS UPDATE - NEEDS TO SEND NOTIFICATION TO ALL SUBSCRIBED USERS, NOT JUST ONE PHONE NUMBER
-                        sendNotification("17736414066","A user is close to " + court.getName());
+                    if (distanceInMeters < 50) {
+                        // ADD USER TO LIST OF USERS AT COURT
+                        // if user not already in list at court
+                        if (!court.getUsersAtCourt().contains(testUser.getUser_id())) {
+                            String currentUsersAtCourt = court.getUsersAtCourt();
+                            AddUserToCourtTimer addTimer = new AddUserToCourtTimer(testUser, court.getName(), currentUsersAtCourt);
+                            addTimer.run();
+                        }
                     }
                 }
 
-                DataSnapshot data = passDataSnapshot(dataSnapshot);
-
-                Court.subscribeToCourt("Walnut Street Park", dataSnapshot);
             }
-
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -341,12 +344,10 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    // read db to see if another user is close to a court
-    public void newUserAtSubscribedCourtCheck(final User currentUser){
-        // 0) get list of courts user is subscribed to - change to a firebase database reference when users can subscribe to courts
-        String subscribedCourts = "GSU,";
-
-        // 1) read db info of courts
+    /**
+     * Checks to see if a new user is at a court the user has subscribed to
+     */
+    public void newUserAtSubscribedCourtCheck(){
         DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
 
         ChildEventListener listenerForNewUsersAtCourts = new ChildEventListener() {
@@ -355,21 +356,18 @@ public class MainActivity extends AppCompatActivity
             public void onChildChanged(DataSnapshot dataSnapshot, String childName) {
                 // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
                 Court court = dataSnapshot.getValue(Court.class);
-                if (currentUser.getCourtsSubscribedTo().indexOf(court.getName()) >= 0) {   // user subscribed to court that changed
-                    sendNotification("17736414066","newUserSubscribedCourtCheck");
+                if (testUser.getCourtsSubscribedTo().indexOf(court.getName()) >= 0) {   // user subscribed to court that changed
+                    Notification.sendNotification("Court alert!", "A new user is at " + court.getName());
                 }
 
             }
 
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
-
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
-
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {}
 
@@ -379,9 +377,13 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public DataSnapshot passDataSnapshot(DataSnapshot data){
-        return data;
-    }
 
+    /**
+     * Allows access to app context from other classes
+     * @returns Context of app
+     */
+    public static Context getAppContext(){
+        return MainActivity.context;
+    }
 
 }
