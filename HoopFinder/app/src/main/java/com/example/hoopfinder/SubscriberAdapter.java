@@ -15,8 +15,8 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-    private List<Court> mDataset;
+public class SubscriberAdapter extends RecyclerView.Adapter<SubscriberAdapter.MyViewHolder> {
+    private List<User> mDataset;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -39,13 +39,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(List<Court> myDataset) {
+    public SubscriberAdapter(List<User> myDataset) {
         mDataset = myDataset;
     }
 
     // Create new views (invoked by the layout manager)
     @Override
-    public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
+    public SubscriberAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
                                                      int viewType) {
         // create a new view
 
@@ -63,8 +63,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         // - replace the contents of the view with that element
 
 
-        Court testCourt = mDataset.get(position);
-        holder.nameTextView.setText(testCourt.getName());
+        User testUser = mDataset.get(position);
+        holder.nameTextView.setText(testUser.user_email);
 
         //Log.d("Court names", testCourt.getName());
     }
