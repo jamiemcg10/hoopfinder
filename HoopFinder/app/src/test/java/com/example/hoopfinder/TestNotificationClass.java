@@ -11,6 +11,6 @@ public class TestNotificationClass {
 
     @Test
     public void testSendNotification(){
-        
+
     }
 }
