@@ -87,9 +87,9 @@ public class CourtLocationActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(md);
 
-        testData();
+        //testData();
 
-        //readFromDB();
+        readFromDB();
         //String[] test = { "A", "B", "C"};
 
 
@@ -151,6 +151,7 @@ public class CourtLocationActivity extends AppCompatActivity {
 
         };
 
+        dbCourts.addValueEventListener(courtListener);
         md.notifyDataSetChanged();
         //return courtList;
     }
