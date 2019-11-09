@@ -7,18 +7,19 @@ import android.os.Bundle;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import android.widget.Button;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
@@ -26,8 +27,6 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.PlaceDetectionClient;
-import com.google.android.gms.location.places.PlaceLikelihood;
-import com.google.android.gms.location.places.PlaceLikelihoodBufferResponse;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -68,16 +67,14 @@ public class AddCourtActivity extends AppCompatActivity
     // location retrieved by the Fused Location Provider.
     private Location mLastKnownLocation;
 
+    // LatLng of the marker
+    private LatLng mMarkerLatLng;
+    // Alert Dialog text to prompt user to enter the court name
+    private String mPromptUserCourtName;
+
     // Keys for storing activity state.
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
-
-    // Used for selecting the current place.
-    private static final int M_MAX_ENTRIES = 5;
-    private String[] mLikelyPlaceNames;
-    private String[] mLikelyPlaceAddresses;
-    private String[] mLikelyPlaceAttributions;
-    private LatLng[] mLikelyPlaceLatLngs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,8 +135,8 @@ public class AddCourtActivity extends AppCompatActivity
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.option_get_place) {
-            showCurrentPlace();
+        if (item.getItemId() == R.id.submit_court_location) {
+            submitCourtLocation();
         }
         return true;
     }
@@ -157,6 +154,7 @@ public class AddCourtActivity extends AppCompatActivity
             public void onMapClick(LatLng point) {
                 mMap.clear();
                 mMap.addMarker(new MarkerOptions().position(point));
+                mMarkerLatLng = point;
             }
         });
 
@@ -213,9 +211,14 @@ public class AddCourtActivity extends AppCompatActivity
                         if (task.isSuccessful()) {
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = task.getResult();
+                            LatLng mTempMapMarker = new LatLng(mLastKnownLocation.getLatitude(),
+                                    mLastKnownLocation.getLongitude());
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(mLastKnownLocation.getLatitude(),
                                             mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                            mMap.clear();
+                            mMap.addMarker(new MarkerOptions().position(mTempMapMarker));
+                            mMarkerLatLng = mTempMapMarker;
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
                             Log.e(TAG, "Exception: %s", task.getException());
@@ -273,68 +276,44 @@ public class AddCourtActivity extends AppCompatActivity
     }
 
     /**
-     * Prompts the user to select the current place from a list of likely places, and shows the
-     * current place on the map - provided the user has granted location permission.
+     * Prompts the user to enter a court name and submit
      */
-    private void showCurrentPlace() {
+    private void submitCourtLocation() {
         if (mMap == null) {
             return;
         }
 
         if (mLocationPermissionGranted) {
-            // Get the likely places - that is, the businesses and other points of interest that
-            // are the best match for the device's current location.
-            @SuppressWarnings("MissingPermission") final
-            Task<PlaceLikelihoodBufferResponse> placeResult =
-                    mPlaceDetectionClient.getCurrentPlace(null);
-            placeResult.addOnCompleteListener
-                    (new OnCompleteListener<PlaceLikelihoodBufferResponse>() {
-                        @Override
-                        public void onComplete(@NonNull Task<PlaceLikelihoodBufferResponse> task) {
-                            if (task.isSuccessful() && task.getResult() != null) {
-                                PlaceLikelihoodBufferResponse likelyPlaces = task.getResult();
+            // We assume the marker is always set as long as the location permission are granted
+            // since the marker will default the user location and update on click
 
-                                // Set the count, handling cases where less than 5 entries are returned.
-                                int count;
-                                if (likelyPlaces.getCount() < M_MAX_ENTRIES) {
-                                    count = likelyPlaces.getCount();
-                                } else {
-                                    count = M_MAX_ENTRIES;
-                                }
+            Log.d(TAG, "in submitCourtLocation()");
 
-                                int i = 0;
-                                mLikelyPlaceNames = new String[count];
-                                mLikelyPlaceAddresses = new String[count];
-                                mLikelyPlaceAttributions = new String[count];
-                                mLikelyPlaceLatLngs = new LatLng[count];
-
-                                for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-                                    // Build a list of likely places to show the user.
-                                    mLikelyPlaceNames[i] = (String) placeLikelihood.getPlace().getName();
-                                    mLikelyPlaceAddresses[i] = (String) placeLikelihood.getPlace()
-                                            .getAddress();
-                                    mLikelyPlaceAttributions[i] = (String) placeLikelihood.getPlace()
-                                            .getAttributions();
-                                    mLikelyPlaceLatLngs[i] = placeLikelihood.getPlace().getLatLng();
-
-                                    i++;
-                                    if (i > (count - 1)) {
-                                        break;
-                                    }
-                                }
-
-                                // Release the place likelihood buffer, to avoid memory leaks.
-                                likelyPlaces.release();
-
-                                // Show a dialog offering the user the list of likely places, and add a
-                                // marker at the selected place.
-                                openPlacesDialog();
-
-                            } else {
-                                Log.e(TAG, "Exception: %s", task.getException());
-                            }
-                        }
-                    });
+            // Construct a dialog box to prompt user for input Court Name
+            // Add Court to database along with the marker LatLng
+            final AlertDialog.Builder inputAlert = new AlertDialog.Builder(this);
+            inputAlert.setTitle("Please Enter Court Name");
+            inputAlert.setMessage(String.format("Lat: %d, Long: %d", mMarkerLatLng.latitude, mMarkerLatLng.longitude));
+            final EditText userInput = new EditText(this);
+            inputAlert.setView(userInput);
+            inputAlert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String userInputValue = userInput.getText().toString();
+                    Court.addCourt(userInputValue, mMarkerLatLng.latitude, mMarkerLatLng.longitude);
+                    Log.d(TAG, userInputValue);
+                }
+            });
+            inputAlert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            AlertDialog alertDialog = inputAlert.create();
+            alertDialog.show();
+            // promptName();
+                
         } else {
             // The user has not granted permission.
             Log.i(TAG, "The user did not grant location permission.");
@@ -348,41 +327,6 @@ public class AddCourtActivity extends AppCompatActivity
             // Prompt the user for permission.
             getLocationPermission();
         }
-    }
-
-    /**
-     * Displays a form allowing the user to select a place from a list of likely places.
-     */
-    private void openPlacesDialog() {
-        // Ask the user to choose the place where they are now.
-        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // The "which" argument contains the position of the selected item.
-                LatLng markerLatLng = mLikelyPlaceLatLngs[which];
-                String markerSnippet = mLikelyPlaceAddresses[which];
-                if (mLikelyPlaceAttributions[which] != null) {
-                    markerSnippet = markerSnippet + "\n" + mLikelyPlaceAttributions[which];
-                }
-
-                // Add a marker for the selected place, with an info window
-                // showing information about that place.
-                mMap.addMarker(new MarkerOptions()
-                        .title(mLikelyPlaceNames[which])
-                        .position(markerLatLng)
-                        .snippet(markerSnippet));
-
-                // Position the map's camera at the location of the marker.
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLatLng,
-                        DEFAULT_ZOOM));
-            }
-        };
-
-        // Display the dialog.
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.pick_place)
-                .setItems(mLikelyPlaceNames, listener)
-                .show();
     }
 
     /**
