@@ -293,7 +293,6 @@ public class AddCourtActivity extends AppCompatActivity
             // Add Court to database along with the marker LatLng
             final AlertDialog.Builder inputAlert = new AlertDialog.Builder(this);
             inputAlert.setTitle("Please Enter Court Name");
-            inputAlert.setMessage(String.format("Lat: %d, Long: %d", mMarkerLatLng.latitude, mMarkerLatLng.longitude));
             final EditText userInput = new EditText(this);
             inputAlert.setView(userInput);
             inputAlert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
@@ -302,6 +301,8 @@ public class AddCourtActivity extends AppCompatActivity
                     String userInputValue = userInput.getText().toString();
                     Court.addCourt(userInputValue, mMarkerLatLng.latitude, mMarkerLatLng.longitude);
                     Log.d(TAG, userInputValue);
+                    Toast toast = Toast.makeText(getApplicationContext(), "You've succesfully added a court", Toast.LENGTH_LONG);
+                    toast.show();
                 }
             });
             inputAlert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
