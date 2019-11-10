@@ -21,7 +21,7 @@ public class StartingActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                Intent launchActivity1 = new Intent(StartingActivity.this, CourtLocationActivity.class);
+                Intent launchActivity1 = new Intent(StartingActivity.this, firebaseAuth.class);
                 startActivity(launchActivity1);
             }
         },5000);

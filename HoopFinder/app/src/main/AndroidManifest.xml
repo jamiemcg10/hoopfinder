@@ -16,7 +16,7 @@
         android:theme="@style/Theme.AppCompat.NoActionBar">
         <activity android:name=".SubscriberList"></activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".LogoutActivity"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".firebaseAuth"
