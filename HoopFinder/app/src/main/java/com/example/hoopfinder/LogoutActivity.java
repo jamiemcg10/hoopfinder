@@ -7,13 +7,18 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 
 public class LogoutActivity extends AppCompatActivity {
@@ -75,14 +80,36 @@ public class LogoutActivity extends AppCompatActivity {
 
 
                 signOut();
-                //Intent launchActivity1 = new Intent(LogoutActivity.this, firebaseAuth.class);
-                //startActivity(launchActivity1);
+                Intent launchActivity1 = new Intent(LogoutActivity.this, firebaseAuth.class);
+                startActivity(launchActivity1);
 
 
             }
         });
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // Name, email address, and profile photo Url
+            String name = user.getDisplayName();
+            String email = user.getEmail();
+            //Uri photoUrl = user.getPhotoUrl();
 
+            // Check if user's email is verified
+            boolean emailVerified = user.isEmailVerified();
+
+            // The user's ID, unique to the Firebase project. Do NOT use this value to
+            // authenticate with your backend server, if you have one. Use
+            // FirebaseUser.getIdToken() instead.
+            String uid = user.getUid();
+            String userName = user.getDisplayName();
+            String userEmail = user.getEmail();
+            //Log.d("Username ", userName);
+
+
+            TextView userId = (TextView) findViewById(R.id.userId);
+            userId.setText(userEmail);
+
+        }
     }
 
     public void signOut() {
