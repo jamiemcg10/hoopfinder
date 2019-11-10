@@ -28,10 +28,11 @@ public class User {
      * @param user_pwd User's password
      * @param user_courtsSubscribedTo List of courts user is subscribed to
      */
-    public User(String user_id, String user_email, String user_pwd, String user_courtsSubscribedTo){
+    public User(String user_id, String user_email, String user_pwd, String user_phone_number, String user_courtsSubscribedTo){
         this.user_id =user_id;
         this.user_pwd = user_pwd;
         this.user_email = user_email;
+        this.user_phone_number = user_phone_number;
         this.user_courtsSubscribedTo = user_courtsSubscribedTo;
     }
 

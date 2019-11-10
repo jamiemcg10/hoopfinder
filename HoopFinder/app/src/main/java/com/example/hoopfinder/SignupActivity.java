@@ -5,8 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+
 import androidx.annotation.Nullable;
+
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.telephony.TelephonyManager;
 
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +37,16 @@ import java.util.ArrayList;
 public class SignupActivity extends AppCompatActivity {
     // Database reference
     DatabaseReference databaseUsers;
+    // lists for permissions
+    private ArrayList<String> permissionsToRequest;
+    private ArrayList<String> permissionsRejected = new ArrayList<>();
+    private ArrayList<String> permissions = new ArrayList<>();
+    // integer for permissions results request
+    private static final int ALL_PERMISSIONS_RESULT = 1011;
+    private final String TAG = "com.example.hoopfinder";
+    private static Context context;
+
+
 
     // [START declare_auth]
     private FirebaseAuth mAuth;
@@ -50,9 +64,25 @@ public class SignupActivity extends AppCompatActivity {
         final EditText password2 = findViewById(R.id.password2);
         Button cancel = findViewById(R.id.cancel);
 
-       // private Button loginBtn;
-       // private ProgressBar progressBar;
+        // private Button loginBtn;
+        // private ProgressBar progressBar;
 
+        permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        permissions.add(Manifest.permission.SEND_SMS);
+        permissions.add(Manifest.permission.READ_PHONE_STATE);
+        permissions.add(Manifest.permission.INTERNET);
+
+        SignupActivity.context = getApplicationContext();// save context to use elsewhere
+
+        permissionsToRequest = permissionsToRequest(permissions);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (permissionsToRequest.size() > 0) {
+                requestPermissions(permissionsToRequest.toArray(
+                        new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
+            }
+        }
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -66,7 +96,6 @@ public class SignupActivity extends AppCompatActivity {
         });*/
 
 
-
         databaseUsers = FirebaseDatabase.getInstance().getReference("Users");
 
 
@@ -75,21 +104,21 @@ public class SignupActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String psswrd1, psswrd2;
 
-                psswrd1= password.getText().toString();
+                psswrd1 = password.getText().toString();
                 psswrd2 = password2.getText().toString();
 
                 if (!(psswrd1.equals(psswrd2))) {
-                    Log.d(psswrd1, "onClick:password 2: "+ psswrd2);
+                    Log.d(psswrd1, "onClick:password 2: " + psswrd2);
                     Toast.makeText(getApplicationContext(),
                             "Passwords dont match", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     //addUser();
 
                     registerNewUser();
                     //Toast.makeText(getApplicationContext(),
-                           // "Welcome", Toast.LENGTH_SHORT).show();
+                    // "Welcome", Toast.LENGTH_SHORT).show();
 
-                   // Intent launchActivity1 = new Intent(SignupActivity.this, MainActivity.class);
+                    // Intent launchActivity1 = new Intent(SignupActivity.this, MainActivity.class);
                     //startActivity(launchActivity1);
                 }
 
@@ -111,8 +140,30 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
+
+    private ArrayList<String> permissionsToRequest(ArrayList<String> wantedPermissions) {
+        ArrayList<String> result = new ArrayList<>();
+
+        for (String perm : wantedPermissions) {
+            if (!hasPermission(perm)) {
+                result.add(perm);
+            }
+        }
+
+        return result;
+    }
+
+    private boolean hasPermission(String permission) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+        }
+
+        return true;
+    }
+
+
     public String getUserPhoneNumber() {
-        TelephonyManager tMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
@@ -124,32 +175,31 @@ public class SignupActivity extends AppCompatActivity {
             } else {
                 return "no phone number, do something instead";
             }
-        }
-        else {
+        } else {
             Toast.makeText(this, "You need to enable permissions to get phone number!", Toast.LENGTH_SHORT).show();
             return "need permissions";
         }
     }
 
-    private void addUser(){
+    private void addUser() {
         EditText email = findViewById(R.id.emailaddress);
         EditText pwd = findViewById(R.id.password);
         String user_email = email.getText().toString().trim();
         String user_pwd = pwd.getText().toString();
         String user_phone_number = getUserPhoneNumber();
 
-        if(!TextUtils.isEmpty(user_email)){
+        if (!TextUtils.isEmpty(user_email)) {
 
             String user_id = databaseUsers.push().getKey(); //each user will have a unique id
 
-            User user = new User(user_id,user_email,user_pwd,user_phone_number); // pass the user_id user_email user_pwd to the User Object
+            //User user = new User(user_id, user_email, user_pwd, user_phone_number); // pass the user_id user_email user_pwd to the User Object
 
-            databaseUsers.child("users" ).child(user_id).setValue(user);
+            //databaseUsers.child("users").child(user_id).setValue(user);
 
-            Toast.makeText(this, "User registered: " +user_id, Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "User registered: " + user_id, Toast.LENGTH_LONG).show();
 
-        }else{
-            Toast.makeText(this,"You should Enter a valid email", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "You should Enter a valid email", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -177,6 +227,7 @@ public class SignupActivity extends AppCompatActivity {
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @SuppressLint("NewApi")
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         //Log.d()
@@ -194,12 +245,29 @@ public class SignupActivity extends AppCompatActivity {
                                 // The user's ID, unique to the Firebase project. Do NOT use this value to
                                 // authenticate with your backend server, if you have one. Use
                                 // FirebaseUser.getIdToken() instead.
+
+                                TelephonyManager tMgr = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
+                                if (checkSelfPermission(Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                                    // TODO: Consider calling
+                                    //    Activity#requestPermissions
+                                    // here to request the missing permissions, and then overriding
+                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                    //                                          int[] grantResults)
+                                    // to handle the case where the user grants the permission. See the documentation
+                                    // for Activity#requestPermissions for more details.
+                                    return;
+                                }
+                                String mPhoneNumber = tMgr.getLine1Number();
+
+
                                 String uid = user.getUid();
                                 String userName = user.getDisplayName();
                                 String userEmail = user.getEmail();
 
-                                //Log.d("Username ", userName);
-                                User test = new User(uid, userEmail,"XX", "XX");
+
+
+                                //Log.d("Phonenumber ", mPhoneNumber);
+                                User test = new User(uid,userEmail,"XX",mPhoneNumber,"XX");
 
                                 //String user_id = databaseUsers.push().getKey(); //each user will have a unique id
 
@@ -207,7 +275,6 @@ public class SignupActivity extends AppCompatActivity {
 
                                 databaseUsers.child("users" ).child(uid).setValue(user);
                             }
-
 
                             Intent intent = new Intent(SignupActivity.this, firebaseAuth.class);
                             startActivity(intent);
