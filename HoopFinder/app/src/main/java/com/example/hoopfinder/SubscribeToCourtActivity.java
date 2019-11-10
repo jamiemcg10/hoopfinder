@@ -71,6 +71,8 @@ public class SubscribeToCourtActivity extends AppCompatActivity
     @Nullable
     private LatLng mMarkerCourtLatLng = null;
 
+    public static ArrayList<Court> mAllCourts = new ArrayList<>();
+
     // Keys for storing activity state.
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
@@ -188,6 +190,7 @@ public class SubscribeToCourtActivity extends AppCompatActivity
 
         // Populate markers of courts on the map
         populateCourts();
+        // System.out.println(mAllCourts.size());
     }
 
     public void populateCourts() {
@@ -200,8 +203,10 @@ public class SubscribeToCourtActivity extends AppCompatActivity
                 // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Court court = child.getValue(Court.class);
+                    mAllCourts.add(court);
                     LatLng mTempMapMarker = new LatLng(court.getLatitude(), court.getLongitude());
                     mMap.addMarker(new MarkerOptions().position(mTempMapMarker));
+                    System.out.println(mAllCourts.size());
                 }
             }
 
@@ -214,7 +219,7 @@ public class SubscribeToCourtActivity extends AppCompatActivity
         };
 
         dbCourts.addValueEventListener(courtListener);
-        // System.out.println(mAllCourts.size());
+
     }
 
     /**
