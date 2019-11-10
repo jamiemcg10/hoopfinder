@@ -112,7 +112,7 @@ public class CourtLocationActivity extends AppCompatActivity {
 
     public void readFromDB(){
         DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
-        //Log.d("db",FirebaseDatabase.getInstance().getReference().toString());
+        Log.d("db",FirebaseDatabase.getInstance().getReference().toString());
 
         ValueEventListener courtListener = new ValueEventListener() {
 
@@ -122,7 +122,7 @@ public class CourtLocationActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
-                    //int i =0;
+                    int i =0;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Court court = child.getValue(Court.class);
                     //Location courtLocation = new Location("");
@@ -137,8 +137,8 @@ public class CourtLocationActivity extends AppCompatActivity {
 
                     courtList.add(court);
 
-                   // Log.d("Court ", courtList.get(i).getName());
-                   // i++;
+                    Log.d("Court ", courtList.get(i).getName());
+                    i++;
                     //}
                 }
             }
