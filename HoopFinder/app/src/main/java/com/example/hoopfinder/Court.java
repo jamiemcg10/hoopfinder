@@ -37,7 +37,7 @@ public class Court {
 
     private static final String TAG = "com.example.hoopfinder";
 
-    private static ArrayList<Court> listOfCourts;
+    public static ArrayList<Court> listOfCourts = new ArrayList<Court>();
 
     /**
      * Default contructor. Needed for Firebase data reads.
@@ -137,33 +137,4 @@ public class Court {
     }
 
     public String getUsersAtCourt() { return this.usersAtCourt; }
-
-    public static ArrayList<Court> getAllCourts() {
-
-        DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
-        ValueEventListener courtListener = new ValueEventListener() {
-            // DATABASE CAN ONLY BE READ THROUGH LISTENERS
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    Court court = child.getValue(Court.class);
-                    listOfCourts.add(court);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Getting a court failed
-                Log.w(TAG, "loadCourt:onCancelled", databaseError.toException());
-
-            }
-        };
-
-        dbCourts.addValueEventListener(courtListener);
-
-        return listOfCourts;
-    }
-
-
 }

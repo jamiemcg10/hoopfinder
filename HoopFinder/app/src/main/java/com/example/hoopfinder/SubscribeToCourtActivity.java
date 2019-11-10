@@ -1,5 +1,6 @@
 package com.example.hoopfinder;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -34,6 +35,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -61,10 +67,9 @@ public class SubscribeToCourtActivity extends AppCompatActivity
     // location retrieved by the Fused Location Provider.
     private Location mLastKnownLocation;
 
-    // LatLng of the marker
-    private LatLng mMarkerLatLng;
-    // Alert Dialog text to prompt user to enter the court name
-    private String mPromptUserCourtName;
+    // current court referenced by the marker
+    @Nullable
+    private LatLng mMarkerCourtLatLng = null;
 
     // Keys for storing activity state.
     private static final String KEY_CAMERA_POSITION = "camera_position";
@@ -137,14 +142,14 @@ public class SubscribeToCourtActivity extends AppCompatActivity
     public void onMapReady(GoogleMap map) {
         mMap = map;
 
-        // load courts from DB
-        ArrayList<Court> mAllCourts = Court.getAllCourts();
-        mMap.clear();
-
-        for (Court court : mAllCourts) {
-
-            mMap.addMarker(new MarkerOptions().position(mTempMapMarker));
-        }
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
+        {
+            @Override
+            public boolean onMarkerClick(Marker mMarker) {
+                mMarkerCourtLatLng = mMarker.getPosition();
+                return true;
+            }
+        });
 
         // Use a custom info window adapter to handle multiple lines of text in the
         // info window contents.
@@ -180,6 +185,36 @@ public class SubscribeToCourtActivity extends AppCompatActivity
 
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
+
+        // Populate markers of courts on the map
+        populateCourts();
+    }
+
+    public void populateCourts() {
+
+        DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
+        ValueEventListener courtListener = new ValueEventListener() {
+            // DATABASE CAN ONLY BE READ THROUGH LISTENERS
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    Court court = child.getValue(Court.class);
+                    LatLng mTempMapMarker = new LatLng(court.getLatitude(), court.getLongitude());
+                    mMap.addMarker(new MarkerOptions().position(mTempMapMarker));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Getting a court failed
+                Log.w(TAG, "loadCourt:onCancelled", databaseError.toException());
+
+            }
+        };
+
+        dbCourts.addValueEventListener(courtListener);
+        // System.out.println(mAllCourts.size());
     }
 
     /**
@@ -192,6 +227,7 @@ public class SubscribeToCourtActivity extends AppCompatActivity
          */
         try {
             if (mLocationPermissionGranted) {
+
                 Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
                 locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
                     @Override
@@ -204,9 +240,6 @@ public class SubscribeToCourtActivity extends AppCompatActivity
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(mLastKnownLocation.getLatitude(),
                                             mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                            mMap.clear();
-                            mMap.addMarker(new MarkerOptions().position(mTempMapMarker));
-                            mMarkerLatLng = mTempMapMarker;
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
                             Log.e(TAG, "Exception: %s", task.getException());
@@ -276,31 +309,6 @@ public class SubscribeToCourtActivity extends AppCompatActivity
             // since the marker will default the user location and update on click
 
             Log.d(TAG, "in subscribeToCourt()");
-
-            // Construct a dialog box to prompt user for input Court Name
-            // Add Court to database along with the marker LatLng
-            final AlertDialog.Builder inputAlert = new AlertDialog.Builder(this);
-            inputAlert.setTitle("Please Enter Court Name");
-            final EditText userInput = new EditText(this);
-            inputAlert.setView(userInput);
-            inputAlert.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String userInputValue = userInput.getText().toString();
-                    Court.addCourt(userInputValue, mMarkerLatLng.latitude, mMarkerLatLng.longitude);
-                    Log.d(TAG, userInputValue);
-                    Toast toast = Toast.makeText(getApplicationContext(), "You've succesfully added a court", Toast.LENGTH_LONG);
-                    toast.show();
-                }
-            });
-            inputAlert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            AlertDialog alertDialog = inputAlert.create();
-            alertDialog.show();
             // promptName();
 
         } else {
