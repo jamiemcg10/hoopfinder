@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity
         String testMobile = ""; // fill out if you want to test SMS
         String testMessage = "Proximity Alert!"; // SMS message text
         // should eventually be actual app user
-        testUser = new User("jsmart", "jamie@bu.edu", "password", "GSU,Walnut Street Park");
+        //testUser = new User("jsmart", "jamie@bu.edu", "password", "GSU,Walnut Street Park");
 
 
 

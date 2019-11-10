@@ -28,7 +28,7 @@ public class CourtLocationActivity extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private DatabaseReference databaseRef;
-    private List<Court> courtList;
+    private static List<Court> courtList;
     MyAdapter md;
     private Location location;
     GoogleApiClient googleApiClient;
@@ -48,7 +48,7 @@ public class CourtLocationActivity extends AppCompatActivity {
         courtsTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent launchActivity1 = new Intent(CourtLocationActivity.this, CourtLocationActivity.class);
+                Intent launchActivity1 = new Intent(CourtLocationActivity.this, SubscribeToCourtActivity.class);
                 startActivity(launchActivity1);
             }
         });
@@ -82,6 +82,8 @@ public class CourtLocationActivity extends AppCompatActivity {
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
+
+
         md = new MyAdapter(courtList);
 
         //rvContacts.setAdapter(adapter);
@@ -95,8 +97,11 @@ public class CourtLocationActivity extends AppCompatActivity {
         recyclerView.setAdapter(md);
 
         testData();
-
         //readFromDB();
+
+
+        md.notifyDataSetChanged();
+
         //String[] test = { "A", "B", "C"};
 
 
@@ -159,7 +164,7 @@ public class CourtLocationActivity extends AppCompatActivity {
         };
 
         dbCourts.addValueEventListener(courtListener);
-        md.notifyDataSetChanged();
+
         //return courtList;
     }
 

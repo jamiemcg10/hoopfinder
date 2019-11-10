@@ -43,7 +43,7 @@ public class SubscriberListActivity extends AppCompatActivity {
         courtsTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent launchActivity1 = new Intent(SubscriberListActivity.this, CourtLocationActivity.class);
+                Intent launchActivity1 = new Intent(SubscriberListActivity.this, SubscribeToCourtActivity.class);
                 startActivity(launchActivity1);
             }
         });
