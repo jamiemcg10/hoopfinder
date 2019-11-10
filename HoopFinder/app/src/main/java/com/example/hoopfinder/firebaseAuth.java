@@ -61,7 +61,7 @@ public class firebaseAuth extends AppCompatActivity implements View.OnClickListe
             //close this activity
             finish();
             //opening profile activity
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, CourtLocationActivity.class));
         }
 
         //initializing views

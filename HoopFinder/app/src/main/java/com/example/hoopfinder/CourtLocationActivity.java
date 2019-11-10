@@ -1,6 +1,5 @@
 package com.example.hoopfinder;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -9,24 +8,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.service.autofill.TextValueSanitizer;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationServices;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -43,7 +33,7 @@ public class CourtLocationActivity extends AppCompatActivity {
     private Location location;
     GoogleApiClient googleApiClient;
 
-    Button courtsTab, subscriberTab, myAccount;
+    Button courtsTab, subscriberTab, myAccount, mapButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +43,7 @@ public class CourtLocationActivity extends AppCompatActivity {
         courtsTab = (Button)findViewById(R.id.courtsTab);
         subscriberTab =(Button)findViewById(R.id.subscriberTab);
         myAccount =(Button)findViewById(R.id.accountTab);
+        mapButton =(Button)findViewById(R.id.CourtMap);
 
         courtsTab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,10 +56,26 @@ public class CourtLocationActivity extends AppCompatActivity {
         subscriberTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent launchActivity1 = new Intent(CourtLocationActivity.this, SubscriberList.class);
+                Intent launchActivity1 = new Intent(CourtLocationActivity.this, SubscriberListActivity.class);
                 startActivity(launchActivity1);
             }
         });
+        myAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent launchActivity1 = new Intent(CourtLocationActivity.this, LogoutActivity.class);
+                startActivity(launchActivity1);
+            }
+        });
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent launchActivity1 = new Intent(CourtLocationActivity.this, AddCourtActivity.class);
+                startActivity(launchActivity1);
+            }
+        });
+
+
 
 
         courtList = new ArrayList<Court>();
@@ -87,9 +94,9 @@ public class CourtLocationActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(md);
 
-        //testData();
+        testData();
 
-        readFromDB();
+        //readFromDB();
         //String[] test = { "A", "B", "C"};
 
 

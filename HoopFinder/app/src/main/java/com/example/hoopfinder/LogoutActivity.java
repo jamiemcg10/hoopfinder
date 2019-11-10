@@ -1,6 +1,7 @@
 package com.example.hoopfinder;
 
 import android.content.Intent;
+import android.media.tv.TvContract;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,7 +22,7 @@ public class LogoutActivity extends AppCompatActivity {
 
     Button logout;
     ProgressBar loadingBar;
-    Button courtsTab, subscriberTab, myAccount;
+    Button courtsTab, subscriberTab, myAccount, mapButton;
 
 
     @Override
@@ -31,10 +32,10 @@ public class LogoutActivity extends AppCompatActivity {
         //loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory().get(LoginViewModel.class);
 
         // create variables for the data entered.
-
         courtsTab = (Button)findViewById(R.id.courtsTab);
         subscriberTab =(Button)findViewById(R.id.subscriberTab);
         myAccount =(Button)findViewById(R.id.accountTab);
+        mapButton =(Button)findViewById(R.id.CourtMap);
 
         courtsTab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,15 +48,21 @@ public class LogoutActivity extends AppCompatActivity {
         subscriberTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent launchActivity1 = new Intent(LogoutActivity.this, SubscriberList.class);
+                Intent launchActivity1 = new Intent(LogoutActivity.this, SubscriberListActivity.class);
                 startActivity(launchActivity1);
             }
         });
-
         myAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent launchActivity1 = new Intent(LogoutActivity.this, LogoutActivity.class);
+                startActivity(launchActivity1);
+            }
+        });
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent launchActivity1 = new Intent(LogoutActivity.this, AddCourtActivity.class);
                 startActivity(launchActivity1);
             }
         });
@@ -68,8 +75,8 @@ public class LogoutActivity extends AppCompatActivity {
 
 
                 signOut();
-                Intent launchActivity1 = new Intent(LogoutActivity.this, firebaseAuth.class);
-                startActivity(launchActivity1);
+                //Intent launchActivity1 = new Intent(LogoutActivity.this, firebaseAuth.class);
+                //startActivity(launchActivity1);
 
 
             }
