@@ -69,7 +69,7 @@ public class AddCourtActivity extends AppCompatActivity
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
-    Button courtsTab, subscriberTab, myAccount, mapButton;
+    // Button courtsTab, subscriberTab, myAccount, mapButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

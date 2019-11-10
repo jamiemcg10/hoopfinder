@@ -42,9 +42,6 @@
             android:theme="@style/AppTheme">
         </activity>
 
-        <activity android:name=".SubscribeToCourt"></activity>
-        <activity android:name=".AddCourtActivity" />
-
 
         <!-- Signup page needs to use auth and add users to a table -->
         <activity android:name=".SignupActivity">
