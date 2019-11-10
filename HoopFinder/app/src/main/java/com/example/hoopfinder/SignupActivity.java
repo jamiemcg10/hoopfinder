@@ -101,6 +101,7 @@ public class SignupActivity extends AppCompatActivity {
                             "Welcome", Toast.LENGTH_SHORT).show();
 
                     Intent launchActivity1 = new Intent(SignupActivity.this, AddCourtActivity.class); // change this back to MAIN after testing
+
                     startActivity(launchActivity1);
                 }
 
