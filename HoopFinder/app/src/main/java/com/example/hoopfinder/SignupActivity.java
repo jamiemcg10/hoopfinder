@@ -2,9 +2,17 @@ package com.example.hoopfinder;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
+import androidx.annotation.Nullable;
+import android.content.pm.PackageManager;
+
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +27,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
 
 public class SignupActivity extends AppCompatActivity {
     // Database reference
@@ -64,8 +74,10 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String psswrd1, psswrd2;
+
                 psswrd1= password.getText().toString();
                 psswrd2 = password2.getText().toString();
+
                 if (!(psswrd1.equals(psswrd2))) {
                     Log.d(psswrd1, "onClick:password 2: "+ psswrd2);
                     Toast.makeText(getApplicationContext(),
@@ -99,17 +111,38 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
+    public String getUserPhoneNumber() {
+        TelephonyManager tMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+
+            @Nullable String mPhoneNumber = tMgr.getLine1Number(); // todo check permissions for READ PHONE STATE
+
+            if (mPhoneNumber != null) {
+                return mPhoneNumber;
+            } else {
+                return "no phone number, do something instead";
+            }
+        }
+        else {
+            Toast.makeText(this, "You need to enable permissions to get phone number!", Toast.LENGTH_SHORT).show();
+            return "need permissions";
+        }
+    }
+
     private void addUser(){
         EditText email = findViewById(R.id.emailaddress);
         EditText pwd = findViewById(R.id.password);
         String user_email = email.getText().toString().trim();
         String user_pwd = pwd.getText().toString();
+        String user_phone_number = getUserPhoneNumber();
 
         if(!TextUtils.isEmpty(user_email)){
 
             String user_id = databaseUsers.push().getKey(); //each user will have a unique id
 
-            User user = new User(user_id,user_email,user_pwd); // pass the user_id user_email user_pwd to the User Object
+            User user = new User(user_id,user_email,user_pwd,user_phone_number); // pass the user_id user_email user_pwd to the User Object
 
             databaseUsers.child("users" ).child(user_id).setValue(user);
 

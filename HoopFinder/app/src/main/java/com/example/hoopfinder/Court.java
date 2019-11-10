@@ -8,73 +8,81 @@
 
 package com.example.hoopfinder;
 
+import androidx.room.Database;
+
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.regex.Pattern;
 
+/**
+ * Controls the structure for courts and allows for courts to be added to and removed from database
+ */
 public class Court {
 
-    private int id;
     private String name;
     private double longitude;
     private double latitude;
+    private String usersAtCourt;
 
     /**
      * Default contructor. Needed for Firebase data reads.
      */
-    public Court(){
+    public Court() {
 
     }
 
     /**
      * Constructor to create a court
-     * @param name This is the name of the court
-     * @param latitude This is the latitude of the court
+     *
+     * @param name      This is the name of the court
+     * @param latitude  This is the latitude of the court
      * @param longitude This is the longitude of the court
      */
-    public Court(int id, String name, double latitude, double longitude){
-        this.name=name;
-        this.latitude=latitude;
-        this.longitude=longitude;
-    }
-
-    public double getLongitude(){
-        return this.longitude;
-    }
-
-    public double getLatitude(){
-        return this.latitude;
-    }
-
-    public String getName(){
-        return this.name;
+    public Court(int id, String name, double latitude, double longitude) {
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.usersAtCourt = "";
     }
 
 
     /**
      * Adds a court to the database. Illegal characters will be automatically removed from the name
-     * @param name The name of the court
-     * @param latitude The court's latitude
+     *
+     * @param name      The name of the court to be added
+     * @param latitude  The court's latitude
      * @param longitude The court's longitude
-     * @return nothing
      */
-    public static void addCourt(String name, double latitude, double longitude){
+    public static void addCourt(String name, double latitude, double longitude) {
         DatabaseReference db;
 
         // remove characters that are incompatable with database
-        name = name.replaceAll(Pattern.quote("."),"")
-                .replaceAll(Pattern.quote("#"),"")
-                .replaceAll(Pattern.quote("$"),"")
-                .replaceAll(Pattern.quote("["),"")
-                .replaceAll(Pattern.quote("]"),"");
+        name = name.replaceAll(Pattern.quote("."), "")
+                .replaceAll(Pattern.quote("#"), "")
+                .replaceAll(Pattern.quote("$"), "")
+                .replaceAll(Pattern.quote("["), "")
+                .replaceAll(Pattern.quote("]"), "");
 
 
         db = FirebaseDatabase.getInstance().getReference();
         db.child("Courts").child(name).child("name").setValue(name);
         db.child("Courts").child(name).child("latitude").setValue(latitude);
         db.child("Courts").child(name).child("longitude").setValue(longitude);
+        db.child("Courts").child(name).child("subscribers").setValue("");
+        db.child("Courts").child(name).child("usersAtCourt").setValue("");
 
+    }
+
+    /**
+     * Deletes a court from the database
+     * @param name The name of the court to remove from the database
+     */
+    public static void deleteCourt(String name){
+        DatabaseReference db;
+        db = FirebaseDatabase.getInstance().getReference();
+        db.child("Courts").child(name).removeValue();
     }
 
     /**
@@ -103,5 +111,18 @@ public class Court {
         addCourt("Classroom", 42.348775, -71.103703);
     }
 
+    public double getLongitude() {
+        return this.longitude;
+    }
+
+    public double getLatitude() {
+        return this.latitude;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getUsersAtCourt() { return this.usersAtCourt; }
 
 }

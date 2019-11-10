@@ -85,6 +85,7 @@ public class SubscriberList extends AppCompatActivity {
     }
 
     public void testData(){
+        /* not currently working, need phone numbers in the Constructor() now
         User user1 = new User("1","Saloni@bu.edu","123");
         User user2 = new User("1","Test@bu.edu","123");
         User user3 = new User("1","Mike@bu.edu","123");
@@ -96,5 +97,6 @@ public class SubscriberList extends AppCompatActivity {
         subscriberList.add(user4);
 
         md.notifyDataSetChanged();
+         */
     }
 }
