@@ -11,8 +11,13 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+
 import android.telephony.TelephonyManager;
 import android.util.Log;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2f9be14006fbc83167bef4ba4d6ac6fb9dda2002
 import android.widget.TextView;
 import android.widget.Toast;
 
