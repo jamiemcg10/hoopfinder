@@ -2,7 +2,6 @@ package com.example.hoopfinder;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import android.content.DialogInterface;
@@ -36,10 +35,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.ArrayList;
+
 /**
  * An activity that displays a map showing the place at the device's current location.
  */
-public class AddCourtActivity extends AppCompatActivity
+public class SubscribeToCourtActivity extends AppCompatActivity
         implements OnMapReadyCallback {
 
     private static final String TAG = AddCourtActivity.class.getSimpleName();
@@ -69,47 +70,9 @@ public class AddCourtActivity extends AppCompatActivity
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
-    Button courtsTab, subscriberTab, myAccount, mapButton;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /*courtsTab = (Button)findViewById(R.id.courtsTab);
-        subscriberTab =(Button)findViewById(R.id.subscriberTab);
-        myAccount =(Button)findViewById(R.id.accountTab);
-        //mapButton =(Button)findViewById(R.id.courtMap);
-
-        courtsTab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent launchActivity1 = new Intent(AddCourtActivity.this, CourtLocationActivity.class);
-                startActivity(launchActivity1);
-            }
-        });
-
-        subscriberTab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent launchActivity1 = new Intent(AddCourtActivity.this, SubscriberListActivity.class);
-                startActivity(launchActivity1);
-            }
-        });
-        myAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent launchActivity1 = new Intent(AddCourtActivity.this, LogoutActivity.class);
-                startActivity(launchActivity1);
-            }
-        });
-        mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent launchActivity1 = new Intent(AddCourtActivity.this, AddCourtActivity.class);
-                startActivity(launchActivity1);
-            }
-        });*/
-
 
         // Retrieve location and camera position from saved instance state.
         if (savedInstanceState != null) {
@@ -118,7 +81,7 @@ public class AddCourtActivity extends AppCompatActivity
         }
 
         // Retrieve the content view that renders the map.
-        setContentView(R.layout.activity_add_court);
+        setContentView(R.layout.activity_subscribe_to_court);
 
         // Construct a FusedLocationProviderClient.
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -149,7 +112,7 @@ public class AddCourtActivity extends AppCompatActivity
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.submit_court_location_menu, menu);
+        getMenuInflater().inflate(R.menu.subscribe_to_court_menu, menu);
         return true;
     }
 
@@ -160,8 +123,8 @@ public class AddCourtActivity extends AppCompatActivity
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.submit_court_location) {
-            submitCourtLocation();
+        if (item.getItemId() == R.id.subscribe_to_court) {
+            subscribeToCourt();
         }
         return true;
     }
@@ -174,14 +137,14 @@ public class AddCourtActivity extends AppCompatActivity
     public void onMapReady(GoogleMap map) {
         mMap = map;
 
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng point) {
-                mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(point));
-                mMarkerLatLng = point;
-            }
-        });
+        // load courts from DB
+        ArrayList<Court> mAllCourts = Court.getAllCourts();
+        mMap.clear();
+
+        for (Court court : mAllCourts) {
+
+            mMap.addMarker(new MarkerOptions().position(mTempMapMarker));
+        }
 
         // Use a custom info window adapter to handle multiple lines of text in the
         // info window contents.
@@ -303,7 +266,7 @@ public class AddCourtActivity extends AppCompatActivity
     /**
      * Prompts the user to enter a court name and submit
      */
-    private void submitCourtLocation() {
+    private void subscribeToCourt() {
         if (mMap == null) {
             return;
         }
@@ -312,7 +275,7 @@ public class AddCourtActivity extends AppCompatActivity
             // We assume the marker is always set as long as the location permission are granted
             // since the marker will default the user location and update on click
 
-            Log.d(TAG, "in submitCourtLocation()");
+            Log.d(TAG, "in subscribeToCourt()");
 
             // Construct a dialog box to prompt user for input Court Name
             // Add Court to database along with the marker LatLng
@@ -324,7 +287,6 @@ public class AddCourtActivity extends AppCompatActivity
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     String userInputValue = userInput.getText().toString();
-                    // ToDo check if add court works, update Toast accordingly
                     Court.addCourt(userInputValue, mMarkerLatLng.latitude, mMarkerLatLng.longitude);
                     Log.d(TAG, userInputValue);
                     Toast toast = Toast.makeText(getApplicationContext(), "You've succesfully added a court", Toast.LENGTH_LONG);
@@ -340,16 +302,10 @@ public class AddCourtActivity extends AppCompatActivity
             AlertDialog alertDialog = inputAlert.create();
             alertDialog.show();
             // promptName();
-                
+
         } else {
             // The user has not granted permission.
             Log.i(TAG, "The user did not grant location permission.");
-
-            // Add a default marker, because the user hasn't selected a place.
-            mMap.addMarker(new MarkerOptions()
-                    .title(getString(R.string.default_info_title))
-                    .position(mDefaultLocation)
-                    .snippet(getString(R.string.default_info_snippet)));
 
             // Prompt the user for permission.
             getLocationPermission();

@@ -22,6 +22,21 @@
             android:theme="@style/AppTheme">
         </activity>
 
+        
+
+        <!-- Subscribe to Courts -->
+        <activity
+            android:name=".SubscribeToCourtActivity"
+            android:theme="@style/AppTheme">
+        </activity>
+
+        <!-- Add Courts -->
+        <activity
+            android:name=".AddCourtActivity"
+            android:theme="@style/AppTheme">
+        </activity>
+
+        <!-- FIrebase auth -->
         <activity
             android:name=".firebaseAuth"
             android:theme="@style/AppTheme">
@@ -31,6 +46,7 @@
         <activity android:name=".AddCourtActivity" />
 
 
+        <!-- Signup page needs to use auth and add users to a table -->
         <activity android:name=".SignupActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
