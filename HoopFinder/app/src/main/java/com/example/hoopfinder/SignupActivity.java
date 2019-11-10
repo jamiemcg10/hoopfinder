@@ -246,19 +246,7 @@ public class SignupActivity extends AppCompatActivity {
                                 // authenticate with your backend server, if you have one. Use
                                 // FirebaseUser.getIdToken() instead.
 
-                                TelephonyManager tMgr = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
-                                if (checkSelfPermission(Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                                    // TODO: Consider calling
-                                    //    Activity#requestPermissions
-                                    // here to request the missing permissions, and then overriding
-                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                    //                                          int[] grantResults)
-                                    // to handle the case where the user grants the permission. See the documentation
-                                    // for Activity#requestPermissions for more details.
-                                    return;
-                                }
-                                String mPhoneNumber = tMgr.getLine1Number();
-
+                                String mPhoneNumber = getUserPhoneNumber();
 
                                 String uid = user.getUid();
                                 String userName = user.getDisplayName();
