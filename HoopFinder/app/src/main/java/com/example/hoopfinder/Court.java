@@ -34,6 +34,7 @@ public class Court {
     private double longitude;
     private double latitude;
     private String usersAtCourt;
+    private static boolean addToCourtSuccessful = true;
 
     private static final String TAG = "com.example.hoopfinder";
 
@@ -64,28 +65,63 @@ public class Court {
     /**
      * Adds a court to the database. Illegal characters will be automatically removed from the name
      *
-     * @param name      The name of the court to be added
+     * @param enteredName      The name of the court to be added
      * @param latitude  The court's latitude
      * @param longitude The court's longitude
      */
-    public static void addCourt(String name, double latitude, double longitude) {
+    public static boolean addCourt(String enteredName, double latitude, double longitude) {
+        addToCourtSuccessful = true;
         DatabaseReference db;
 
         // remove characters that are incompatable with database
-        name = name.replaceAll(Pattern.quote("."), "")
+        final String name = enteredName.replaceAll(Pattern.quote("."), "")
                 .replaceAll(Pattern.quote("#"), "")
                 .replaceAll(Pattern.quote("$"), "")
                 .replaceAll(Pattern.quote("["), "")
-                .replaceAll(Pattern.quote("]"), "");
+                .replaceAll(Pattern.quote("]"), "")
+                .trim();
 
 
-        db = FirebaseDatabase.getInstance().getReference();
-        db.child("Courts").child(name).child("name").setValue(name);
-        db.child("Courts").child(name).child("latitude").setValue(latitude);
-        db.child("Courts").child(name).child("longitude").setValue(longitude);
-        db.child("Courts").child(name).child("subscribers").setValue("");
-        db.child("Courts").child(name).child("usersAtCourt").setValue("");
+        // check to make sure court is not already in db
+        DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
+        ValueEventListener courtListener = new ValueEventListener() {
+            // DATABASE CAN ONLY BE READ THROUGH LISTENERS
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    Court court = child.getValue(Court.class);
+                    Log.d("COURT NAME", court.getName());
+                    Log.d("NEW COURT NAME",name);
+                    if (court.getName() == name){
+                        //court is already in db
+                        //Todo fix - not updating - Court location activity
+                        addToCourtSuccessful = false;
+                    }
+                }
 
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Getting a court failed
+                Log.w("Court.addCourt()", "loadCourt:onCancelled", databaseError.toException());
+            }
+        };
+
+        dbCourts.addValueEventListener(courtListener);
+
+        // if court not in db, add court
+        if (addToCourtSuccessful) {
+            db = FirebaseDatabase.getInstance().getReference();
+            db.child("Courts").child(name).child("name").setValue(name);
+            db.child("Courts").child(name).child("latitude").setValue(latitude);
+            db.child("Courts").child(name).child("longitude").setValue(longitude);
+            db.child("Courts").child(name).child("usersAtCourt").setValue("");
+        }
+
+        Log.d("addToCourtSuccessful", String.valueOf(addToCourtSuccessful));
+        return addToCourtSuccessful;
     }
 
     /**

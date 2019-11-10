@@ -309,6 +309,8 @@ public class MainActivity extends AppCompatActivity
      * Checks to see if the current user is close to a court
      */
     public void proximityCheck(){
+
+        Log.d("MainActivity", "proximityCheck");
         // CHECK PROXIMITY TO COURTS
         location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
@@ -330,9 +332,19 @@ public class MainActivity extends AppCompatActivity
                         // if user not already in list at court
                         /*if (!court.getUsersAtCourt().contains(testUser.getUser_id())) {
                             String currentUsersAtCourt = court.getUsersAtCourt();
-                            AddUserToCourtTimer addTimer = new AddUserToCourtTimer(testUser, court.getName(), currentUsersAtCourt);
+                            ChangeUserCourtStatus addTimer = new ChangeUserCourtStatus(testUser, court, currentUsersAtCourt, "ADD", googleApiClient);
                             addTimer.run();
                         }*/
+                    }
+
+                    // check if user has left court
+                    if (!(court.getUsersAtCourt() == null) && court.getUsersAtCourt().contains(testUser.getUser_id())){
+                        if (distanceInMeters >= 50){
+                            //user has left court
+                            String currentUsersAtCourt = court.getUsersAtCourt();
+                            ChangeUserCourtStatus removeTimer = new ChangeUserCourtStatus(testUser, court, currentUsersAtCourt, "REMOVE", googleApiClient);
+                            removeTimer.run();
+                        }
                     }
                 }
 
