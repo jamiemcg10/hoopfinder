@@ -1,5 +1,6 @@
 package com.example.hoopfinder;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -19,6 +20,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -28,32 +34,11 @@ public class SignupActivity extends AppCompatActivity {
     // Database reference
     DatabaseReference databaseUsers;
 
-    // lists for permissions
-    private ArrayList<String> permissionsToRequest;
-    private ArrayList<String> permissionsRejected = new ArrayList<>();
-    private ArrayList<String> permissions = new ArrayList<>();
-    // integer for permissions results request
-    private static final int ALL_PERMISSIONS_RESULT = 1011;
+    // [START declare_auth]
+    private FirebaseAuth mAuth;
+    // [END declare_auth]
+    //private final EditText emailAdd, password, password2;
 
-    private ArrayList<String> permissionsToRequest(ArrayList<String> wantedPermissions) {
-        ArrayList<String> result = new ArrayList<>();
-
-        for (String perm : wantedPermissions) {
-            if (!hasPermission(perm)) {
-                result.add(perm);
-            }
-        }
-
-        return result;
-    }
-
-    private boolean hasPermission(String permission) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
-        }
-
-        return true;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,23 +50,25 @@ public class SignupActivity extends AppCompatActivity {
         final EditText password2 = findViewById(R.id.password2);
         Button cancel = findViewById(R.id.cancel);
 
-        // we add permissions we need to request location of the users
-        permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        permissions.add(Manifest.permission.SEND_SMS);
-        permissions.add(Manifest.permission.READ_PHONE_STATE);
+       // private Button loginBtn;
+       // private ProgressBar progressBar;
 
-        permissionsToRequest = permissionsToRequest(permissions);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (permissionsToRequest.size() > 0) {
-                requestPermissions(permissionsToRequest.toArray(
-                        new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
+        mAuth = FirebaseAuth.getInstance();
+
+        //initializeUI();
+
+        /*confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                registerNewUser();
             }
-        }
+        });*/
+
 
 
         databaseUsers = FirebaseDatabase.getInstance().getReference("Users");
+
 
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,12 +83,14 @@ public class SignupActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),
                             "Passwords dont match", Toast.LENGTH_SHORT).show();
                 }else{
-                    addUser();
-                    Toast.makeText(getApplicationContext(),
-                            "Welcome", Toast.LENGTH_SHORT).show();
+                    //addUser();
 
-                    Intent launchActivity1 = new Intent(SignupActivity.this, AddCourtActivity.class); // change this back to MAIN after testing
-                    startActivity(launchActivity1);
+                    registerNewUser();
+                    //Toast.makeText(getApplicationContext(),
+                           // "Welcome", Toast.LENGTH_SHORT).show();
+
+                   // Intent launchActivity1 = new Intent(SignupActivity.this, MainActivity.class);
+                    //startActivity(launchActivity1);
                 }
 
             }
@@ -163,4 +152,58 @@ public class SignupActivity extends AppCompatActivity {
             Toast.makeText(this,"You should Enter a valid email", Toast.LENGTH_LONG).show();
         }
     }
+
+    private void registerNewUser() {
+        //progressBar.setVisibility(View.VISIBLE);
+
+        EditText emailTV = findViewById(R.id.emailaddress);
+        EditText passwordTV = findViewById(R.id.password);
+
+        String email, password;
+        email = emailTV.getText().toString();
+        password = passwordTV.getText().toString();
+
+        Log.d("Email ", email);
+        Log.d("Password ", password);
+
+       /* if (TextUtils.isEmpty(email)) {
+            Toast.makeText(getApplicationContext(), "Please enter email...", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (TextUtils.isEmpty(password)) {
+            Toast.makeText(getApplicationContext(), "Please enter password!", Toast.LENGTH_LONG).show();
+            return;
+        }*/
+
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        //Log.d()
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
+                            //progressBar.setVisibility(View.GONE);
+
+                            Intent intent = new Intent(SignupActivity.this, firebaseAuth.class);
+                            startActivity(intent);
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            //progressBar.setVisibility(View.GONE);
+                            Log.d("Login Error: ",task.getException().getMessage());
+                        }
+                    }
+                });
+    }
+
+    /*private void initializeUI() {
+        emailTV = findViewById(R.id.email);
+        passwordTV = findViewById(R.id.password);
+        regBtn = findViewById(R.id.register);
+        progressBar = findViewById(R.id.progressBar);
+    }*/
+
+
+
+
 }

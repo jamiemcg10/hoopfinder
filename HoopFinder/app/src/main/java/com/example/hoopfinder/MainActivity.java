@@ -328,11 +328,11 @@ public class MainActivity extends AppCompatActivity
                     if (distanceInMeters < 50) {
                         // ADD USER TO LIST OF USERS AT COURT
                         // if user not already in list at court
-                        if (!court.getUsersAtCourt().contains(testUser.getUser_id())) {
+                        /*if (!court.getUsersAtCourt().contains(testUser.getUser_id())) {
                             String currentUsersAtCourt = court.getUsersAtCourt();
                             AddUserToCourtTimer addTimer = new AddUserToCourtTimer(testUser, court.getName(), currentUsersAtCourt);
                             addTimer.run();
-                        }
+                        }*/
                     }
                 }
 

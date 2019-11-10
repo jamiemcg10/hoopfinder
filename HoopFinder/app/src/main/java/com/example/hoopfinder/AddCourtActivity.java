@@ -2,6 +2,7 @@ package com.example.hoopfinder;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.content.DialogInterface;
@@ -76,9 +77,47 @@ public class AddCourtActivity extends AppCompatActivity
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
+    Button courtsTab, subscriberTab, myAccount, mapButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /*courtsTab = (Button)findViewById(R.id.courtsTab);
+        subscriberTab =(Button)findViewById(R.id.subscriberTab);
+        myAccount =(Button)findViewById(R.id.accountTab);
+        //mapButton =(Button)findViewById(R.id.courtMap);
+
+        courtsTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent launchActivity1 = new Intent(AddCourtActivity.this, CourtLocationActivity.class);
+                startActivity(launchActivity1);
+            }
+        });
+
+        subscriberTab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent launchActivity1 = new Intent(AddCourtActivity.this, SubscriberListActivity.class);
+                startActivity(launchActivity1);
+            }
+        });
+        myAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent launchActivity1 = new Intent(AddCourtActivity.this, LogoutActivity.class);
+                startActivity(launchActivity1);
+            }
+        });
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent launchActivity1 = new Intent(AddCourtActivity.this, AddCourtActivity.class);
+                startActivity(launchActivity1);
+            }
+        });*/
+
 
         // Retrieve location and camera position from saved instance state.
         if (savedInstanceState != null) {
