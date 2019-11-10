@@ -183,6 +183,31 @@ public class SignupActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
                             //progressBar.setVisibility(View.GONE);
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            if (user != null) {
+                                // Name, email address, and profile photo Url
+                                String name = user.getDisplayName();
+                                String email = user.getEmail();
+                                //Uri photoUrl = user.getPhotoUrl();
+                                // Check if user's email is verified
+                                boolean emailVerified = user.isEmailVerified();
+                                // The user's ID, unique to the Firebase project. Do NOT use this value to
+                                // authenticate with your backend server, if you have one. Use
+                                // FirebaseUser.getIdToken() instead.
+                                String uid = user.getUid();
+                                String userName = user.getDisplayName();
+                                String userEmail = user.getEmail();
+
+                                //Log.d("Username ", userName);
+                                User test = new User(uid, userEmail,"XX", "XX");
+
+                                //String user_id = databaseUsers.push().getKey(); //each user will have a unique id
+
+                                //User user = new User(user_id,user_email,user_pwd,user_phone_number); // pass the user_id user_email user_pwd to the User Object
+
+                                databaseUsers.child("users" ).child(uid).setValue(user);
+                            }
+
 
                             Intent intent = new Intent(SignupActivity.this, firebaseAuth.class);
                             startActivity(intent);
