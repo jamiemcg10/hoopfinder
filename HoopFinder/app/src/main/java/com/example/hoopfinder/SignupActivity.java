@@ -16,7 +16,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -47,12 +46,10 @@ public class SignupActivity extends AppCompatActivity {
     private static Context context;
 
 
-
     // [START declare_auth]
     private FirebaseAuth mAuth;
     // [END declare_auth]
     //private final EditText emailAdd, password, password2;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,18 +83,7 @@ public class SignupActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        //initializeUI();
-
-        /*confirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                registerNewUser();
-            }
-        });*/
-
-
         databaseUsers = FirebaseDatabase.getInstance().getReference("Users");
-
 
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,7 +110,6 @@ public class SignupActivity extends AppCompatActivity {
 
             }
         });
-
 
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -216,15 +201,6 @@ public class SignupActivity extends AppCompatActivity {
         Log.d("Email ", email);
         Log.d("Password ", password);
 
-       /* if (TextUtils.isEmpty(email)) {
-            Toast.makeText(getApplicationContext(), "Please enter email...", Toast.LENGTH_LONG).show();
-            return;
-        }
-        if (TextUtils.isEmpty(password)) {
-            Toast.makeText(getApplicationContext(), "Please enter password!", Toast.LENGTH_LONG).show();
-            return;
-        }*/
-
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @SuppressLint("NewApi")
@@ -247,7 +223,6 @@ public class SignupActivity extends AppCompatActivity {
                                 // FirebaseUser.getIdToken() instead.
 
                                 String mPhoneNumber = getUserPhoneNumber();
-
                                 String uid = user.getUid();
                                 String userName = user.getDisplayName();
                                 String userEmail = user.getEmail();
@@ -255,13 +230,13 @@ public class SignupActivity extends AppCompatActivity {
 
 
                                 //Log.d("Phonenumber ", mPhoneNumber);
-                                User test = new User(uid,userEmail,"XX",mPhoneNumber,"XX");
+                                User test_user = new User(uid,userEmail,"XX",mPhoneNumber,"XX");
 
                                 //String user_id = databaseUsers.push().getKey(); //each user will have a unique id
 
                                 //User user = new User(user_id,user_email,user_pwd,user_phone_number); // pass the user_id user_email user_pwd to the User Object
 
-                                databaseUsers.child("users" ).child(uid).setValue(user);
+                                databaseUsers.child("Users").child(uid).setValue(test_user);
                             }
 
                             Intent intent = new Intent(SignupActivity.this, firebaseAuth.class);

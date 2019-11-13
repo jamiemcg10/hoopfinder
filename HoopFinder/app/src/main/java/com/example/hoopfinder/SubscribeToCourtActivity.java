@@ -42,6 +42,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * An activity that displays a map showing the place at the device's current location.
@@ -67,11 +68,11 @@ public class SubscribeToCourtActivity extends AppCompatActivity
     // location retrieved by the Fused Location Provider.
     private Location mLastKnownLocation;
 
+    public static HashMap<String, Court> mAllCourts = new HashMap<>();
+
     // current court referenced by the marker
     @Nullable
     private LatLng mMarkerCourtLatLng = null;
-
-    public static ArrayList<Court> mAllCourts = new ArrayList<>();
 
     // Keys for storing activity state.
     private static final String KEY_CAMERA_POSITION = "camera_position";
@@ -189,11 +190,12 @@ public class SubscribeToCourtActivity extends AppCompatActivity
         getDeviceLocation();
 
         // Populate markers of courts on the map
-        populateCourts();
+        getAllCourts();
         // System.out.println(mAllCourts.size());
+
     }
 
-    public void populateCourts() {
+    public void getAllCourts() {
 
         DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
         ValueEventListener courtListener = new ValueEventListener() {
@@ -203,10 +205,10 @@ public class SubscribeToCourtActivity extends AppCompatActivity
                 // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Court court = child.getValue(Court.class);
-                    mAllCourts.add(court);
+                    mAllCourts.put(court.getName(), court);
                     LatLng mTempMapMarker = new LatLng(court.getLatitude(), court.getLongitude());
                     mMap.addMarker(new MarkerOptions().position(mTempMapMarker));
-                    System.out.println(mAllCourts.size());
+                    Log.d(TAG, String.valueOf(mAllCourts.size()));
                 }
             }
 
@@ -219,7 +221,6 @@ public class SubscribeToCourtActivity extends AppCompatActivity
         };
 
         dbCourts.addValueEventListener(courtListener);
-
     }
 
     /**

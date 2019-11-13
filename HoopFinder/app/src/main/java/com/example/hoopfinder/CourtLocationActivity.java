@@ -19,6 +19,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +33,9 @@ public class CourtLocationActivity extends AppCompatActivity {
     private static List<Court> courtList;
     MyAdapter md;
     private Location location;
-    GoogleApiClient googleApiClient;
+
+    // The entry point to the Fused Location Provider.
+    private FusedLocationProviderClient mFusedLocationProviderClient;
 
     Button courtsTab, subscriberTab, myAccount, mapButton;
 
@@ -44,6 +48,13 @@ public class CourtLocationActivity extends AppCompatActivity {
         subscriberTab =(Button)findViewById(R.id.subscriberTab);
         myAccount =(Button)findViewById(R.id.accountTab);
         mapButton =(Button)findViewById(R.id.CourtMap);
+
+        // instantiate a court provider
+        // fetch courts once
+        // instantiate main user tied to current phone
+
+        // start async process of checking prox
+
 
         courtsTab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,8 +114,6 @@ public class CourtLocationActivity extends AppCompatActivity {
         md.notifyDataSetChanged();
 
         //String[] test = { "A", "B", "C"};
-
-
 
     }
 
