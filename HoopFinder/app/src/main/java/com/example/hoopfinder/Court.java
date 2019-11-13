@@ -10,6 +10,7 @@ package com.example.hoopfinder;
 
 import android.location.Location;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -34,7 +35,7 @@ public class Court {
     private double longitude;
     private double latitude;
     private String usersAtCourt;
-    private static boolean addToCourtSuccessful = true;
+
 
     private static final String TAG = "com.example.hoopfinder";
 
@@ -69,9 +70,7 @@ public class Court {
      * @param latitude  The court's latitude
      * @param longitude The court's longitude
      */
-    public static boolean addCourt(String enteredName, double latitude, double longitude) {
-        addToCourtSuccessful = true;
-        DatabaseReference db;
+    public static void addCourt(String enteredName, final double latitude, final double longitude) {
 
         // remove characters that are incompatable with database
         final String name = enteredName.replaceAll(Pattern.quote("."), "")
@@ -89,15 +88,35 @@ public class Court {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
+                boolean addToCourtSuccessful = true;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Court court = child.getValue(Court.class);
-                    Log.d("COURT NAME", court.getName());
-                    Log.d("NEW COURT NAME",name);
-                    if (court.getName() == name){
+                    //Log.i("COURT NAME", court.getName());
+                    //Log.i("NEW COURT NAME",name);
+                    if (court.getName().toLowerCase().equals(name.toLowerCase())){
                         //court is already in db
                         //Todo fix - not updating - Court location activity
                         addToCourtSuccessful = false;
+                        //Log.i("addToCourtSuccessful1", Boolean.toString(addToCourtSuccessful));
                     }
+                }
+
+                //Log.i("addToCourtSuccessful2", Boolean.toString(addToCourtSuccessful));
+
+                if (addToCourtSuccessful) {
+                    DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+
+                    db.child("Courts").child(name).child("name").setValue(name);
+                    db.child("Courts").child(name).child("latitude").setValue(latitude);
+                    db.child("Courts").child(name).child("longitude").setValue(longitude);
+                    db.child("Courts").child(name).child("usersAtCourt").setValue("");
+
+                    Toast.makeText(AddCourtActivity.getAppContext(), "New court added", Toast.LENGTH_SHORT).show();
+
+                }
+
+                else {
+                    Toast.makeText(AddCourtActivity.getAppContext(), "Court already exists", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -111,18 +130,8 @@ public class Court {
 
         dbCourts.addValueEventListener(courtListener);
 
-        // if court not in db, add court
-        if (addToCourtSuccessful) {
-            db = FirebaseDatabase.getInstance().getReference();
-            db.child("Courts").child(name).child("name").setValue(name);
-            db.child("Courts").child(name).child("latitude").setValue(latitude);
-            db.child("Courts").child(name).child("longitude").setValue(longitude);
-            db.child("Courts").child(name).child("usersAtCourt").setValue("");
-        }
-
-        Log.d("addToCourtSuccessful", String.valueOf(addToCourtSuccessful));
-        return addToCourtSuccessful;
     }
+
 
     /**
      * Deletes a court from the database

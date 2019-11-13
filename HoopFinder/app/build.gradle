@@ -35,10 +35,12 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'com.android.support:support-annotations:24.0.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test:core:1.1.0'
 
     //facebook dependency
-    implementation 'com.facebook.android:facebook-android-sdk:4.40.0'
+    //implementation 'com.facebook.android:facebook-android-sdk:4.40.0'
 
     //Firebase Database
     implementation 'com.google.firebase:firebase-analytics:17.2.0'
@@ -50,7 +52,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.firebaseui:firebase-ui-auth:4.3.1'
 
-    implementation 'com.google.firebase:firebase-messaging:20.0.0'
+    //implementation 'com.google.firebase:firebase-messaging:20.0.0'
 }
 //Firebase Database
 apply plugin: 'com.google.gms.google-services'

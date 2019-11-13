@@ -2,7 +2,10 @@ package com.example.hoopfinder;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+
 import android.content.Intent;
+
+import android.content.Context;
 import android.os.Bundle;
 
 import android.content.DialogInterface;
@@ -55,6 +58,7 @@ public class AddCourtActivity extends AppCompatActivity
     private static final int DEFAULT_ZOOM = 15;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted;
+    private static Context context;   // needed until app structure is finalized and can be placed in appropriate location
 
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
@@ -110,6 +114,8 @@ public class AddCourtActivity extends AppCompatActivity
             }
         });*/
 
+
+        context = getApplicationContext();// save context to use elsewhere - needed until app structure is finalized and final location can be determined
 
         // Retrieve location and camera position from saved instance state.
         if (savedInstanceState != null) {
@@ -327,8 +333,9 @@ public class AddCourtActivity extends AppCompatActivity
                     // ToDo check if add court works, update Toast accordingly
                     Court.addCourt(userInputValue, mMarkerLatLng.latitude, mMarkerLatLng.longitude);
                     Log.d(TAG, userInputValue);
-                    Toast toast = Toast.makeText(getApplicationContext(), "You've succesfully added a court", Toast.LENGTH_LONG);
-                    toast.show();
+                    // handle below in Court class
+                    //Toast toast = Toast.makeText(getApplicationContext(), "You've succesfully added a court", Toast.LENGTH_LONG);
+                    //toast.show();
                 }
             });
             inputAlert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -377,4 +384,6 @@ public class AddCourtActivity extends AppCompatActivity
             Log.e("Exception: %s", e.getMessage());
         }
     }
+
+    public static Context getAppContext(){ return AddCourtActivity.context; }  // needed until location of context is finalized
 }
