@@ -8,11 +8,20 @@
 
 package com.example.hoopfinder;
 
+import android.location.Location;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 import androidx.room.Database;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.regex.Pattern;
 
@@ -25,6 +34,10 @@ public class Court {
     private double longitude;
     private double latitude;
     private String usersAtCourt;
+
+    private static final String TAG = "com.example.hoopfinder";
+
+    public static ArrayList<Court> listOfCourts = new ArrayList<Court>();
 
     /**
      * Default contructor. Needed for Firebase data reads.
@@ -124,5 +137,4 @@ public class Court {
     }
 
     public String getUsersAtCourt() { return this.usersAtCourt; }
-
 }
