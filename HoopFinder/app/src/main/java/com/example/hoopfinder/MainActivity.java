@@ -346,6 +346,16 @@ public class MainActivity extends AppCompatActivity
                             removeTimer.run();
                         }
                     }
+
+                    // check if user has left court
+                    if (!(court.getUsersAtCourt() == null) && court.getUsersAtCourt().contains(testUser.getUser_id())){
+                        if (distanceInMeters >= 50){
+                            //user has left court
+                            String currentUsersAtCourt = court.getUsersAtCourt();
+                            ChangeUserCourtStatus removeTimer = new ChangeUserCourtStatus(testUser, court, currentUsersAtCourt, "REMOVE", googleApiClient);
+                            removeTimer.run();
+                        }
+                    }
                 }
 
             }

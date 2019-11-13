@@ -41,6 +41,7 @@ public class Court {
 
     public static ArrayList<Court> listOfCourts = new ArrayList<Court>();
 
+
     /**
      * Default contructor. Needed for Firebase data reads.
      */
