@@ -236,7 +236,7 @@ public class SignupActivity extends AppCompatActivity {
 
                                 //User user = new User(user_id,user_email,user_pwd,user_phone_number); // pass the user_id user_email user_pwd to the User Object
 
-                                databaseUsers.child("Users").child(uid).setValue(test_user);
+                                databaseUsers.child(uid).setValue(test_user);
                             }
 
                             Intent intent = new Intent(SignupActivity.this, firebaseAuth.class);
