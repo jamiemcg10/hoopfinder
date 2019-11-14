@@ -77,11 +77,7 @@ public class LogoutActivity extends AppCompatActivity {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 signOut();
-                Intent launchActivity1 = new Intent(LogoutActivity.this, firebaseAuth.class);
-                startActivity(launchActivity1);
 
 
             }
@@ -118,7 +114,9 @@ public class LogoutActivity extends AppCompatActivity {
                 .signOut(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     public void onComplete(@NonNull Task<Void> task) {
-                        // ...
+                        // user is now signed out
+                        startActivity(new Intent(LogoutActivity.this, firebaseAuth.class));
+                        finish();
                     }
                 });
         // [END auth_fui_signout]
