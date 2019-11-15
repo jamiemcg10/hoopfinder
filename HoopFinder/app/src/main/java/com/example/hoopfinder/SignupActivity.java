@@ -83,7 +83,7 @@ public class SignupActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        databaseUsers = FirebaseDatabase.getInstance().getReference("Users");
+        databaseUsers = FirebaseDatabase.getInstance().getReference().child("Users");
 
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override

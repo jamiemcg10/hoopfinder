@@ -69,7 +69,7 @@ public class Court {
      * @param longitude The court's longitude
      */
     public static void addCourt(String name, double latitude, double longitude) {
-        DatabaseReference db;
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Courts");
 
         // remove characters that are incompatable with database
         name = name.replaceAll(Pattern.quote("."), "")
@@ -77,14 +77,12 @@ public class Court {
                 .replaceAll(Pattern.quote("$"), "")
                 .replaceAll(Pattern.quote("["), "")
                 .replaceAll(Pattern.quote("]"), "");
-
-
-        db = FirebaseDatabase.getInstance().getReference();
-        db.child("Courts").child(name).child("name").setValue(name);
-        db.child("Courts").child(name).child("latitude").setValue(latitude);
-        db.child("Courts").child(name).child("longitude").setValue(longitude);
-        db.child("Courts").child(name).child("subscribers").setValue("");
-        db.child("Courts").child(name).child("usersAtCourt").setValue("");
+        ;
+        db.child(name).child("name").setValue(name);
+        db.child(name).child("latitude").setValue(latitude);
+        db.child(name).child("longitude").setValue(longitude);
+        db.child(name).child("subscribers").setValue("");
+        db.child(name).child("usersAtCourt").setValue("");
 
     }
 
@@ -93,9 +91,8 @@ public class Court {
      * @param name The name of the court to remove from the database
      */
     public static void deleteCourt(String name){
-        DatabaseReference db;
-        db = FirebaseDatabase.getInstance().getReference();
-        db.child("Courts").child(name).removeValue();
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Courts");
+        db.child(name).removeValue();
     }
 
     /**
