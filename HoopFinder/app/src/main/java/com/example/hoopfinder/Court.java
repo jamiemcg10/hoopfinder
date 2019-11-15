@@ -71,7 +71,7 @@ public class Court {
      * @param latitude  The court's latitude
      * @param longitude The court's longitude
      */
-    public static void addCourt(String name, double latitude, double longitude) {
+    public static void addCourt(String enteredName, double latitude, double longitude) {
         DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Courts");
 
         // remove characters that are incompatable with database
@@ -112,15 +112,7 @@ public class Court {
                 //Log.i("addToCourtSuccessful2", Boolean.toString(addToCourtSuccessful));
 
                 if (addToCourtSuccessful) {
-                    DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-
-                    db.child("Courts").child(name).child("name").setValue(name);
-                    db.child("Courts").child(name).child("latitude").setValue(latitude);
-                    db.child("Courts").child(name).child("longitude").setValue(longitude);
-                    db.child("Courts").child(name).child("usersAtCourt").setValue("");
-
-                    Toast.makeText(AddCourtActivity.getAppContext(), "New court added", Toast.LENGTH_SHORT).show();
-
+                    Toast.makeText(AddCourtActivity.getAppContext(), "Court added", Toast.LENGTH_SHORT).show();
                 }
 
                 else {
