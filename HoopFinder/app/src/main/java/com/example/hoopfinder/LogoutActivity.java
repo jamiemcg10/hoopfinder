@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -77,11 +78,7 @@ public class LogoutActivity extends AppCompatActivity {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 signOut();
-                Intent launchActivity1 = new Intent(LogoutActivity.this, firebaseAuth.class);
-                startActivity(launchActivity1);
 
 
             }
@@ -118,7 +115,10 @@ public class LogoutActivity extends AppCompatActivity {
                 .signOut(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     public void onComplete(@NonNull Task<Void> task) {
-                        // ...
+                        Toast.makeText(LogoutActivity.this,"Signed out",Toast.LENGTH_LONG).show();
+                        // user is now signed out
+                        startActivity(new Intent(LogoutActivity.this, firebaseAuth.class));
+                        finish();
                     }
                 });
         // [END auth_fui_signout]
