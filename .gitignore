@@ -1,6 +1,6 @@
 
 HoopFinder/app/google-services.json
-HoopFinder/*.iml
+HoopFinder/app/app.iml
 HoopFinder/.gradle
 HoopFinder/local.properties
 HoopFinder/.idea/caches
