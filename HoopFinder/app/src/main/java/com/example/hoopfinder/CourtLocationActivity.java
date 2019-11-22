@@ -104,25 +104,7 @@ public class CourtLocationActivity extends AppCompatActivity {
 
         DatabaseReference userRef = databaseRef.child("Users");
 
-        final Query userQuery = userRef.orderByChild("user_id").equalTo(_uid);
-        ValueEventListener currentUserListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    Log.d(TAG, dataSnapshot.toString());
-                    currentUser = dataSnapshot.getValue(User.class);
-                }
-                else {
-                    Log.d(TAG, "why you no exist??");
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d("TAG ", databaseError.toException().toString());
-            }
-        };
-        userQuery.addListenerForSingleValueEvent(currentUserListener);
     }
 
     public void getCurrentUser() {

@@ -1,5 +1,7 @@
 package com.example.hoopfinder;
 
+import android.util.Log;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -12,7 +14,8 @@ public class User {
     String user_phone_number;
     String user_courtsSubscribedTo;
     String user_usersSubscribedTo;
-    DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+    public static DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+    private String TAG = "USER CLASS";
 
     /**
      * Default constructor for use by Firebase
@@ -45,18 +48,23 @@ public class User {
      * @return boolean true if successful false if unsuccessful
      *
      */
-    public boolean subscribeToCourt(String courtName, DatabaseReference ref){
+    public boolean subscribeToCourt(String courtName){
         // depending on the implementation of this method, the validity of the court name and format may need to be checked
-        user_courtsSubscribedTo += ", " + courtName;
-        ref.child("User").child(user_id).child("user_courtsSubscribedTo").setValue(user_courtsSubscribedTo);
+        user_courtsSubscribedTo += "," + courtName;
+        Log.d(TAG, this.user_id);
+        db.child("Users").child(this.user_id).child("user_courtsSubscribedTo").setValue(user_courtsSubscribedTo);
         return true;
     }
 
-    public boolean subscribeToUser(String userId, DatabaseReference ref) {
+    public boolean subscribeToUser(String userId) {
 
-        user_usersSubscribedTo += ", " + userId;
-        ref.child("User").child(user_id).child("user_usersSubscribedTo").setValue(user_usersSubscribedTo);
+        user_usersSubscribedTo += "," + userId;
+        db.child("Users").child(user_id).child("user_usersSubscribedTo").setValue(user_usersSubscribedTo);
         return true;
+    }
+
+    public static void genericSubscribeToCourt(String newCourtNames, String uid) {
+        db.child("Users").child(uid).child("user_courtsSubscribedTo").setValue(newCourtNames);
     }
 
 
