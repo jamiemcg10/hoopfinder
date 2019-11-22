@@ -95,22 +95,10 @@ public class SignupActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),
                             "Passwords dont match", Toast.LENGTH_SHORT).show();
                 } else {
-                    //addUser();
 
                     registerNewUser();
-                    //Toast.makeText(getApplicationContext(),
-                    // "Welcome", Toast.LENGTH_SHORT).show();
-
-
-                    // Intent launchActivity1 = new Intent(SignupActivity.this, MainActivity.class);
-                    //startActivity(launchActivity1);
-
-                    Intent launchActivity1 = new Intent(SignupActivity.this, AddCourtActivity.class); // change this back to MAIN after testing
-
-                    startActivity(launchActivity1);
 
                 }
-
             }
         });
 
@@ -216,7 +204,7 @@ public class SignupActivity extends AppCompatActivity {
                                 databaseUsers.child(uid).setValue(test_user);
                             }
 
-                            Intent intent = new Intent(SignupActivity.this, firebaseAuth.class);
+                            Intent intent = new Intent(SignupActivity.this, CourtLocationActivity.class);
                             startActivity(intent);
                         }
                         else {
