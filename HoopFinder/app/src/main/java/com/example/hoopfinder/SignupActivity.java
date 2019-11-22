@@ -49,7 +49,6 @@ public class SignupActivity extends AppCompatActivity {
     // [START declare_auth]
     private FirebaseAuth mAuth;
     // [END declare_auth]
-    //private final EditText emailAdd, password, password2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +60,6 @@ public class SignupActivity extends AppCompatActivity {
         final EditText password2 = findViewById(R.id.password2);
         Button cancel = findViewById(R.id.cancel);
 
-        // private Button loginBtn;
-        // private ProgressBar progressBar;
 
         permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
         permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
@@ -121,7 +118,6 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
                 emailAdd.setText("");
                 password.setText("");
                 password2.setText("");
@@ -172,27 +168,6 @@ public class SignupActivity extends AppCompatActivity {
         }
     }
 
-    private void addUser() {
-        EditText email = findViewById(R.id.emailaddress);
-        EditText pwd = findViewById(R.id.password);
-        String user_email = email.getText().toString().trim();
-        String user_pwd = pwd.getText().toString();
-        String user_phone_number = getUserPhoneNumber();
-
-        if (!TextUtils.isEmpty(user_email)) {
-
-            String user_id = databaseUsers.push().getKey(); //each user will have a unique id
-
-            //User user = new User(user_id, user_email, user_pwd, user_phone_number); // pass the user_id user_email user_pwd to the User Object
-
-            //databaseUsers.child("users").child(user_id).setValue(user);
-
-            //Toast.makeText(this, "User registered: " + user_id, Toast.LENGTH_LONG).show();
-
-        } else {
-            Toast.makeText(this, "You should Enter a valid email", Toast.LENGTH_LONG).show();
-        }
-    }
 
     private void registerNewUser() {
         //progressBar.setVisibility(View.VISIBLE);
@@ -236,11 +211,7 @@ public class SignupActivity extends AppCompatActivity {
 
 
                                 //Log.d("Phonenumber ", mPhoneNumber);
-                                User test_user = new User(uid,userEmail,"XX",mPhoneNumber,"XX");
-
-                                //String user_id = databaseUsers.push().getKey(); //each user will have a unique id
-
-                                //User user = new User(user_id,user_email,user_pwd,user_phone_number); // pass the user_id user_email user_pwd to the User Object
+                                User test_user = new User(uid, userEmail, mPhoneNumber,"", "");
 
                                 databaseUsers.child(uid).setValue(test_user);
                             }

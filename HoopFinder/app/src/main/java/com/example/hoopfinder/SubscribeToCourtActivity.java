@@ -191,8 +191,6 @@ public class SubscribeToCourtActivity extends AppCompatActivity
 
         // Populate markers of courts on the map
         getAllCourts();
-        // System.out.println(mAllCourts.size());
-
     }
 
     public void getAllCourts() {

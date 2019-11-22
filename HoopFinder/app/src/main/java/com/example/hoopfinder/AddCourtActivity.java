@@ -32,12 +32,18 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * An activity that displays a map showing the place at the device's current location.
@@ -78,43 +84,6 @@ public class AddCourtActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-        /*courtsTab = (Button)findViewById(R.id.courtsTab);
-        subscriberTab =(Button)findViewById(R.id.subscriberTab);
-        myAccount =(Button)findViewById(R.id.accountTab);
-        //mapButton =(Button)findViewById(R.id.courtMap);
-
-        courtsTab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent launchActivity1 = new Intent(AddCourtActivity.this, CourtLocationActivity.class);
-                startActivity(launchActivity1);
-            }
-        });
-
-        subscriberTab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent launchActivity1 = new Intent(AddCourtActivity.this, SubscriberListActivity.class);
-                startActivity(launchActivity1);
-            }
-        });
-        myAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent launchActivity1 = new Intent(AddCourtActivity.this, LogoutActivity.class);
-                startActivity(launchActivity1);
-            }
-        });
-        mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent launchActivity1 = new Intent(AddCourtActivity.this, AddCourtActivity.class);
-                startActivity(launchActivity1);
-            }
-        });*/
-
 
         context = getApplicationContext();// save context to use elsewhere - needed until app structure is finalized and final location can be determined
 
@@ -185,7 +154,7 @@ public class AddCourtActivity extends AppCompatActivity
             @Override
             public void onMapClick(LatLng point) {
                 mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(point));
+                mMap.addMarker(new MarkerOptions().position(point).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
                 mMarkerLatLng = point;
             }
         });
@@ -224,6 +193,8 @@ public class AddCourtActivity extends AppCompatActivity
 
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
+
+        getAllCourts();
     }
 
     /**
@@ -305,6 +276,35 @@ public class AddCourtActivity extends AppCompatActivity
             }
         }
         updateLocationUI();
+    }
+
+    public void getAllCourts() {
+
+        DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
+        ValueEventListener courtListener = new ValueEventListener() {
+            // DATABASE CAN ONLY BE READ THROUGH LISTENERS
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    Court court = child.getValue(Court.class);
+                    LatLng mTempMapMarker = new LatLng(court.getLatitude(), court.getLongitude());
+
+                    // if court is subscribed to by user, make marker green
+
+                    mMap.addMarker(new MarkerOptions().position(mTempMapMarker));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Getting a court failed
+                Log.w(TAG, "loadCourt:onCancelled", databaseError.toException());
+
+            }
+        };
+
+        dbCourts.addValueEventListener(courtListener);
     }
 
     /**

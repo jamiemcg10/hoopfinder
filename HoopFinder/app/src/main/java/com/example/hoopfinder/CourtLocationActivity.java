@@ -1,18 +1,24 @@
 package com.example.hoopfinder;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Database;
 
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.google.android.gms.common.api.GoogleApiClient;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,17 +28,25 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CourtLocationActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager layoutManager;
     private DatabaseReference databaseRef;
-    private static List<Court> courtList;
-    MyAdapter md;
-    private Location location;
+
+    public Location currentUserlocation;
+    @Nullable
+    public User currentUser = null;
+    public FirebaseUser firebaseUser;
+    public String _uid;
+
+    // mapping user name ->
+    public HashMap<String, User> allUsers;
+    // mapping court name -> court object if currentUser is subscribed to a given court
+    public HashMap<String, Court> subscribedCourts;
+    // mapping user name -> user object if currentUser is subscribed to a given user
+    public HashMap<String, User> subscribedUsers;
 
     // The entry point to the Fused Location Provider.
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -49,13 +63,6 @@ public class CourtLocationActivity extends AppCompatActivity {
         myAccount =(Button)findViewById(R.id.accountTab);
         mapButton =(Button)findViewById(R.id.CourtMap);
 
-        // instantiate a court provider
-        // fetch courts once
-        // instantiate main user tied to current phone
-
-        // start async process of checking prox
-
-
         courtsTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,7 +70,6 @@ public class CourtLocationActivity extends AppCompatActivity {
                 startActivity(launchActivity1);
             }
         });
-
         subscriberTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,95 +92,66 @@ public class CourtLocationActivity extends AppCompatActivity {
             }
         });
 
+        // init db ref and do initial read
+        databaseRef = FirebaseDatabase.getInstance().getReference();
 
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
+        _uid = firebaseUser.getUid();
 
-        courtList = new ArrayList<Court>();
+        // populates currentUser attribute
+        getCurrentUser();
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        // ASSUME WE NOW HAVE THE CURRENT USER
 
-
-
-        md = new MyAdapter(courtList);
-
-        //rvContacts.setAdapter(adapter);
-        // Set layout manager to position the items
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-
-        // That's all!
-
-        recyclerView.setAdapter(md);
-
-        testData();
-        //readFromDB();
-
-
-        md.notifyDataSetChanged();
-
-        //String[] test = { "A", "B", "C"};
 
     }
 
-    public void testData(){
-        Court court1 = new Court(1,"North Lawton Playground", 42.349743, -71.127213);
-        Court court2 = new Court(1,"Titus Sparrow Park", 42.343640, -71.080235);
-        Court court3 = new Court(1,"Peters Park", 42.343150, -71.067338);
-        Court court4 = new Court(1,"Ringer Park", 42.350954, -71.138656);
+    public void getCurrentUser() {
 
-       courtList.add(court1);
-       courtList.add(court2);
-       courtList.add(court3);
-       courtList.add(court4);
+        /* get current user from DB */
+        DatabaseReference userRef = databaseRef.child("User").child(_uid);
 
-       md.notifyDataSetChanged();
-    }
-
-    public void readFromDB(){
-        DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
-        Log.d("db",FirebaseDatabase.getInstance().getReference().toString());
-
-        ValueEventListener courtListener = new ValueEventListener() {
-
-            //int i = 0;
+        ValueEventListener currentUserListener = new ValueEventListener() {
 
             // DATABASE CAN ONLY BE READ THROUGH LISTENERS
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
-                    int i =0;
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                currentUser = dataSnapshot.getValue(User.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("TAG ", databaseError.toException().toString());
+            }
+        };
+
+        userRef.addListenerForSingleValueEvent(currentUserListener);
+    }
+
+    public void getSubscribedCourts() {
+
+
+
+        DatabaseReference courtRef = databaseRef.child("Court");
+
+        ValueEventListener courtListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Court court = child.getValue(Court.class);
-                    //Location courtLocation = new Location("");
-                    //courtLocation.setLatitude(court.getLatitude());
-                    //courtLocation.setLongitude(court.getLongitude());
-                    //float distanceInMeters = courtLocation.distanceTo(location);
-                    //Log.d("Court ", court.getName());
 
-                    //if (distanceInMeters < 50) {
-                    // NEEDS UPDATE - NEEDS TO SEND NOTIFICATION TO ALL SUBSCRIBED USERS, NOT JUST ONE PHONE NUMBER
-                    //sendNotification("17736414066","A user is close to " + court.getName());
+                    // if court is subscribed to by user
+                    subscribedCourts.put(court.getName(), court);
 
-                    courtList.add(court);
-
-                    Log.d("Court ", courtList.get(i).getName());
-                    i++;
-                    //}
                 }
             }
 
-
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.d("TAG ", databaseError.toException().toString());
             }
-
         };
-
-        dbCourts.addValueEventListener(courtListener);
-
-        //return courtList;
     }
 
 }

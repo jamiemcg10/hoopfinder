@@ -11,6 +11,7 @@ public class User {
     String user_email;
     String user_phone_number;
     String user_courtsSubscribedTo;
+    String user_usersSubscribedTo;
     DatabaseReference db = FirebaseDatabase.getInstance().getReference();
 
     /**
@@ -26,11 +27,16 @@ public class User {
      * @param user_email Email address of user
      * @param user_courtsSubscribedTo List of courts user is subscribed to
      */
-    public User(String user_id, String user_email, String user_phone_number, String user_courtsSubscribedTo){
+    public User(String user_id,
+                String user_email,
+                String user_phone_number,
+                String user_courtsSubscribedTo,
+                String user_usersSubscribedTo){
         this.user_id =user_id;
         this.user_email = user_email;
         this.user_phone_number = user_phone_number;
         this.user_courtsSubscribedTo = user_courtsSubscribedTo;
+        this.user_usersSubscribedTo = user_usersSubscribedTo;
     }
 
     /**
@@ -43,7 +49,14 @@ public class User {
         // depending on the implementation of this method, the validity of the court name and format may need to be checked
         user_courtsSubscribedTo += ", " + courtName;
         ref.child("User").child(user_id).child("courtsSubscribedTo").setValue(user_courtsSubscribedTo);
-        return true;   // ADD RETURN FALSE IF UNSUCCESSFUL
+        return true;
+    }
+
+    public boolean subscribeToUser(String userId, DatabaseReference ref) {
+
+        user_usersSubscribedTo += ", " + userId;
+        ref.child("User").child(user_id).child("usersSubscribedTo").setValue(user_usersSubscribedTo);
+        return true;
     }
 
 
@@ -59,5 +72,9 @@ public class User {
 
     public String getCourtsSubscribedTo(){
         return this.user_courtsSubscribedTo;
+    }
+
+    public String getUser_usersSubscribedTo() {
+        return this.user_usersSubscribedTo;
     }
 }
