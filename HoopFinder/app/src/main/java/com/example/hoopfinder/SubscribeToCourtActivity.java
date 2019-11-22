@@ -207,6 +207,9 @@ public class SubscribeToCourtActivity extends AppCompatActivity
                     Court court = child.getValue(Court.class);
                     mAllCourts.put(court.getName(), court);
                     LatLng mTempMapMarker = new LatLng(court.getLatitude(), court.getLongitude());
+
+                    // if court is subscribed to by user, make marker green
+
                     mMap.addMarker(new MarkerOptions().position(mTempMapMarker));
                     Log.d(TAG, String.valueOf(mAllCourts.size()));
                 }
