@@ -1,5 +1,7 @@
 package com.example.hoopfinder;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,11 +13,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 
@@ -26,8 +31,9 @@ public class SubscriberListActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private DatabaseReference databaseReference;
     private DatabaseReference userReference;
-    private ArrayList<User> subscriberList = new ArrayList<>();
+    private ArrayList<User> allUserList = new ArrayList<>();
     private final String TAG = "SubscriberList";
+    public String userCourtsSubscribedTo;
 
     SubscriberAdapter md;
 
@@ -81,7 +87,52 @@ public class SubscriberListActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         updateUI();
 
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        final String _uid = firebaseUser.getUid();
+
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users/"+_uid);
+
+        final Query userQuery = userRef;
+        userQuery.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (dataSnapshot.exists()) {
+                    //Log.d(TAG, dataSnapshot.toString());
+                    if (dataSnapshot.getKey().equals("user_courtsSubscribedTo")) {
+                        userCourtsSubscribedTo = dataSnapshot.getValue(String.class);
+                        Log.d(TAG, "HAVE I FOUND THE COURTS LIST??");
+                    }
+
+                } else {
+                    Log.d(TAG, "why you no exist??");
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
         databaseReference = FirebaseDatabase.getInstance().getReference();
+
         userReference = databaseReference.child("Users");
 
         userReference.addChildEventListener(new ChildEventListener() {
@@ -91,7 +142,7 @@ public class SubscriberListActivity extends AppCompatActivity {
                         Log.d(TAG, "DATA EXISTS " + dataSnapshot.toString());
                         User user = dataSnapshot.getValue(User.class);
                         Log.d(TAG, user.toString());
-                        subscriberList.add(user);
+                        allUserList.add(user);
                         updateUI();
                         // fetchData(dataSnapshot);
                     } else {
@@ -125,13 +176,13 @@ public class SubscriberListActivity extends AppCompatActivity {
     }
 
     private void updateUI(){
-        mAdapter = new SubscriberAdapter(subscriberList);
+        mAdapter = new SubscriberAdapter(allUserList);
         recyclerView.setAdapter(mAdapter);
     }
 
     public void fetchData(DataSnapshot dataSnapshot) {
         User user = dataSnapshot.getValue(User.class);
-        subscriberList.add(user);
+        allUserList.add(user);
         updateUI();
     }
 }
