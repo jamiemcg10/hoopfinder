@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.renderscript.Sampler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +24,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -34,7 +36,7 @@ import java.util.List;
 public class CourtLocationActivity extends AppCompatActivity {
 
     private DatabaseReference databaseRef;
-
+    private String TAG = "CourtLocationActivity";
     public Location currentUserlocation;
     @Nullable
     public User currentUser = null;
@@ -98,13 +100,29 @@ public class CourtLocationActivity extends AppCompatActivity {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         _uid = firebaseUser.getUid();
+        Log.d(TAG, _uid);
 
-        // populates currentUser attribute
-        getCurrentUser();
+        DatabaseReference userRef = databaseRef.child("Users");
 
-        // ASSUME WE NOW HAVE THE CURRENT USER
+        final Query userQuery = userRef.orderByChild("user_id").equalTo(_uid);
+        ValueEventListener currentUserListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Log.d(TAG, dataSnapshot.toString());
+                    currentUser = dataSnapshot.getValue(User.class);
+                }
+                else {
+                    Log.d(TAG, "why you no exist??");
+                }
+            }
 
-
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("TAG ", databaseError.toException().toString());
+            }
+        };
+        userQuery.addListenerForSingleValueEvent(currentUserListener);
     }
 
     public void getCurrentUser() {

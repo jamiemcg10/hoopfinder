@@ -6,34 +6,35 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SubscriberListActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
-    private DatabaseReference databaseRef;
-    private List<User> subscriberList;
+    private DatabaseReference databaseReference;
+    private DatabaseReference userReference;
+    private ArrayList<User> subscriberList = new ArrayList<>();
+    private final String TAG = "SubscriberList";
     SubscriberAdapter md;
-    private Location location;
-    GoogleApiClient googleApiClient;
 
     Button courtsTab, subscriberTab, myAccount, mapButton;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subscriber_list);
-        //setContentView(R.layout.activity_court_location);
 
         courtsTab = (Button)findViewById(R.id.courtsTab);
         subscriberTab =(Button)findViewById(R.id.subscriberTab);
@@ -47,7 +48,6 @@ public class SubscriberListActivity extends AppCompatActivity {
                 startActivity(launchActivity1);
             }
         });
-
         subscriberTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,47 +70,67 @@ public class SubscriberListActivity extends AppCompatActivity {
             }
         });
 
-        //view = inflater.inflate(R.layout.activity_court_location, container, false);
-
-        subscriberList = new ArrayList<User>();
 
         recyclerView = (RecyclerView)findViewById(R.id.recylcer_view_user);
-
-        md = new SubscriberAdapter(subscriberList);
 
         //rvContacts.setAdapter(adapter);
         // Set layout manager to position the items
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+        updateUI();
 
-        // That's all!
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        userReference = databaseReference.child("Users");
 
-        recyclerView.setAdapter(md);
+        userReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if (dataSnapshot.exists()) {
+                        Log.d(TAG, "DATA EXISTS " + dataSnapshot.toString());
+                        User user = dataSnapshot.getValue(User.class);
+                        Log.d(TAG, user.toString());
+                        subscriberList.add(user);
+                        updateUI();
+                        // fetchData(dataSnapshot);
+                    } else {
+                        Log.d(TAG, "WHY NO DATA???");
+                    }
+            }
 
-        testData();
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Log.d(TAG+"Changed",dataSnapshot.getValue(User.class).toString());
+            }
 
-        //readFromDB();
-        //String[] test = { "A", "B", "C"};
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Log.d(TAG+"Removed",dataSnapshot.getValue(User.class).toString());
+            }
 
-        //return view;
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                Log.d(TAG+"Moved",dataSnapshot.getValue(User.class).toString());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG+"Cancelled",databaseError.toString());
+            }
+        });
 
 
+        
     }
 
-    public void testData(){
-        /* not currently working, need phone numbers in the Constructor() now
-        User user1 = new User("1","Saloni@bu.edu","123");
-        User user2 = new User("1","Test@bu.edu","123");
-        User user3 = new User("1","Mike@bu.edu","123");
-        User user4 = new User("1","Jamie@bu.edu","123");
+    private void updateUI(){
+        mAdapter = new SubscriberAdapter(subscriberList);
+        recyclerView.setAdapter(mAdapter);
+    }
 
-        subscriberList.add(user1);
-        subscriberList.add(user2);
-        subscriberList.add(user3);
-        subscriberList.add(user4);
-
-        md.notifyDataSetChanged();
-         */
+    public void fetchData(DataSnapshot dataSnapshot) {
+        User user = dataSnapshot.getValue(User.class);
+        subscriberList.add(user);
+        updateUI();
     }
 }

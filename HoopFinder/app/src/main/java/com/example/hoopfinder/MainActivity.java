@@ -384,7 +384,7 @@ public class MainActivity extends AppCompatActivity
             public void onChildChanged(DataSnapshot dataSnapshot, String childName) {
                 // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
                 Court court = dataSnapshot.getValue(Court.class);
-                if (testUser.getCourtsSubscribedTo().indexOf(court.getName()) >= 0) {   // user subscribed to court that changed
+                if (testUser.getUser_courtsSubscribedTo().indexOf(court.getName()) >= 0) {   // user subscribed to court that changed
                     Notification.sendNotification("Court alert!", "A new user is at " + court.getName()+"!");
                 }
 

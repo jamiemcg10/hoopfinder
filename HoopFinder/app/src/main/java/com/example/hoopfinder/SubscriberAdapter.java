@@ -13,10 +13,11 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SubscriberAdapter extends RecyclerView.Adapter<SubscriberAdapter.MyViewHolder> {
-    private List<User> mDataset;
+    private ArrayList<User> mDataset;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -39,7 +40,7 @@ public class SubscriberAdapter extends RecyclerView.Adapter<SubscriberAdapter.My
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public SubscriberAdapter(List<User> myDataset) {
+    public SubscriberAdapter(ArrayList<User> myDataset) {
         mDataset = myDataset;
     }
 
