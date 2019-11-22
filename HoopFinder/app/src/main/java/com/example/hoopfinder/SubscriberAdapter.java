@@ -1,7 +1,5 @@
 package com.example.hoopfinder;
 
-import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,12 +7,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class SubscriberAdapter extends RecyclerView.Adapter<SubscriberAdapter.MyViewHolder> {
     private ArrayList<User> mDataset;
@@ -33,7 +27,7 @@ public class SubscriberAdapter extends RecyclerView.Adapter<SubscriberAdapter.My
 
             super(itemView);
 
-            nameTextView = (TextView) itemView.findViewById(R.id.courtName);
+            nameTextView = (TextView) itemView.findViewById(R.id.user_email);
             messageButton = (Button) itemView.findViewById(R.id.subscribe);
 
         }
@@ -65,9 +59,10 @@ public class SubscriberAdapter extends RecyclerView.Adapter<SubscriberAdapter.My
 
 
         User testUser = mDataset.get(position);
-        holder.nameTextView.setText(testUser.user_email);
+        holder.nameTextView.setText(testUser.getUser_email());
 
-        //Log.d("Court names", testCourt.getName());
+        String subscribeToUid = testUser.getUser_id();
+        
     }
 
     // Return the size of your dataset (invoked by the layout manager)

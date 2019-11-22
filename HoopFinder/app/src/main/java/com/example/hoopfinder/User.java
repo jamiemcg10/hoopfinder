@@ -67,6 +67,10 @@ public class User {
         db.child("Users").child(uid).child("user_courtsSubscribedTo").setValue(newCourtNames);
     }
 
+    public static void genericSubscribeToUser(String newUserNames, String uid) {
+        db.child("Users").child(uid).child("user_courtsSubscribedTo").setValue(newUserNames);
+    }
+
 
     public String getUser_id() {
         return this.user_id;
