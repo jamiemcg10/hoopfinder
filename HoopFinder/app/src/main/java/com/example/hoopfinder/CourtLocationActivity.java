@@ -131,8 +131,6 @@ public class CourtLocationActivity extends AppCompatActivity {
 
     public void getSubscribedCourts() {
 
-
-
         DatabaseReference courtRef = databaseRef.child("Court");
 
         ValueEventListener courtListener = new ValueEventListener() {
