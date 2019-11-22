@@ -28,6 +28,7 @@ public class SubscriberListActivity extends AppCompatActivity {
     private DatabaseReference userReference;
     private ArrayList<User> subscriberList = new ArrayList<>();
     private final String TAG = "SubscriberList";
+
     SubscriberAdapter md;
 
     Button courtsTab, subscriberTab, myAccount, mapButton;

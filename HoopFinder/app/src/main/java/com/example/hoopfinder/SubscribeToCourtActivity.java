@@ -5,14 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -20,7 +18,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -35,13 +32,16 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -50,7 +50,7 @@ import java.util.HashMap;
 public class SubscribeToCourtActivity extends AppCompatActivity
         implements OnMapReadyCallback {
 
-    private static final String TAG = AddCourtActivity.class.getSimpleName();
+    private static final String TAG = SubscribeToCourtActivity.class.getSimpleName();
     private GoogleMap mMap;
     private CameraPosition mCameraPosition;
 
@@ -69,10 +69,13 @@ public class SubscribeToCourtActivity extends AppCompatActivity
     private Location mLastKnownLocation;
 
     public static HashMap<String, Court> mAllCourts = new HashMap<>();
+    public DatabaseReference databaseRef;
 
     // current court referenced by the marker
     @Nullable
     private LatLng mMarkerCourtLatLng = null;
+    private String mCourtName = null;
+    public User currentUser;
 
     // Keys for storing activity state.
     private static final String KEY_CAMERA_POSITION = "camera_position";
@@ -150,6 +153,8 @@ public class SubscribeToCourtActivity extends AppCompatActivity
             @Override
             public boolean onMarkerClick(Marker mMarker) {
                 mMarkerCourtLatLng = mMarker.getPosition();
+                mCourtName = mMarker.getTitle();
+                Toast.makeText(getApplicationContext(), mCourtName, Toast.LENGTH_LONG).show();
                 return true;
             }
         });
@@ -206,9 +211,8 @@ public class SubscribeToCourtActivity extends AppCompatActivity
                     mAllCourts.put(court.getName(), court);
                     LatLng mTempMapMarker = new LatLng(court.getLatitude(), court.getLongitude());
 
-                    // if court is subscribed to by user, make marker green
 
-                    mMap.addMarker(new MarkerOptions().position(mTempMapMarker));
+                    mMap.addMarker(new MarkerOptions().position(mTempMapMarker).title(court.getName()));
                     Log.d(TAG, String.valueOf(mAllCourts.size()));
                 }
             }
@@ -316,9 +320,59 @@ public class SubscribeToCourtActivity extends AppCompatActivity
             // since the marker will default the user location and update on click
 
             Log.d(TAG, "in subscribeToCourt()");
-            // promptName();
 
-        } else {
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+            final String _uid = firebaseUser.getUid();
+            Log.d(TAG, _uid);
+
+            // init db ref and do initial read
+            databaseRef = FirebaseDatabase.getInstance().getReference();
+
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users/"+_uid);
+
+            final Query userQuery = userRef;
+            userQuery.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    if (dataSnapshot.exists()) {
+                        //Log.d(TAG, dataSnapshot.toString());
+                        if (dataSnapshot.getKey().equals("user_courtsSubscribedTo")) {
+                            String userCourtsSubscribedTo = dataSnapshot.getValue(String.class);
+                            Log.d(TAG, "HAVE I FOUND THE COURTS LIST??");
+                            String updatedList = mCourtName + "," + userCourtsSubscribedTo;
+                            Log.d(TAG, updatedList);
+                            User.genericSubscribeToCourt(updatedList, _uid);
+                        }
+
+                    } else {
+                        Log.d(TAG, "why you no exist??");
+                    }
+                }
+
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        }
+        else {
             // The user has not granted permission.
             Log.i(TAG, "The user did not grant location permission.");
 
