@@ -32,7 +32,7 @@ public class User {
                 String user_phone_number,
                 String user_courtsSubscribedTo,
                 String user_usersSubscribedTo){
-        this.user_id =user_id;
+        this.user_id = user_id;
         this.user_email = user_email;
         this.user_phone_number = user_phone_number;
         this.user_courtsSubscribedTo = user_courtsSubscribedTo;
@@ -48,14 +48,14 @@ public class User {
     public boolean subscribeToCourt(String courtName, DatabaseReference ref){
         // depending on the implementation of this method, the validity of the court name and format may need to be checked
         user_courtsSubscribedTo += ", " + courtName;
-        ref.child("User").child(user_id).child("courtsSubscribedTo").setValue(user_courtsSubscribedTo);
+        ref.child("User").child(user_id).child("user_courtsSubscribedTo").setValue(user_courtsSubscribedTo);
         return true;
     }
 
     public boolean subscribeToUser(String userId, DatabaseReference ref) {
 
         user_usersSubscribedTo += ", " + userId;
-        ref.child("User").child(user_id).child("usersSubscribedTo").setValue(user_usersSubscribedTo);
+        ref.child("User").child(user_id).child("user_usersSubscribedTo").setValue(user_usersSubscribedTo);
         return true;
     }
 
@@ -68,7 +68,9 @@ public class User {
         return this.user_email;
     }
 
-    public String getUser_phone_number() { return this.user_phone_number; }
+    public String getUser_phone_number() {
+        return this.user_phone_number;
+    }
 
     public String getCourtsSubscribedTo(){
         return this.user_courtsSubscribedTo;
