@@ -72,11 +72,12 @@ public class User {
         return this.user_phone_number;
     }
 
-    public String getCourtsSubscribedTo(){
+    public String getUser_courtsSubscribedTo(){
         return this.user_courtsSubscribedTo;
     }
 
-    public String getUser_usersSubscribedTo() {
-        return this.user_usersSubscribedTo;
-    }
+    public String getUser_usersSubscribedTo() { return this.user_usersSubscribedTo; }
+
+    @Override
+    public String toString() { return this.user_id; }
 }
