@@ -6,33 +6,38 @@
     android:layout_height="match_parent"
     tools:context=".CourtLocationActivity">
 
+    <!-- JAMIE MADE CHANGES IN THIS FILE THAT CAN BE IGNORED -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <Button
             android:id="@+id/courtsTab"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
+            android:layout_weight="1"
             android:text="Courts" />
 
         <Button
             android:id="@+id/subscriberTab"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_alignTop="@id/frameLayout"
+            android:layout_weight="1"
             android:text="Subscribers" />
 
         <Button
             android:id="@+id/accountTab"
-            android:layout_width="112dp"
+            android:layout_width="match_parent"
             android:layout_height="40dp"
+            android:layout_weight="1"
             android:text="Account" />
 
         <Button
             android:id="@+id/CourtMap"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
             android:layout_weight="1"
             android:text="Map" />
     </LinearLayout>
