@@ -71,8 +71,8 @@ public class Court {
      * @param latitude  The court's latitude
      * @param longitude The court's longitude
      */
-    public static void addCourt(String enteredName, double latitude, double longitude) {
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Courts");
+    public static void addCourt(String enteredName, final double latitude, final double longitude) {
+        final DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Courts");
 
         // remove characters that are incompatable with database
         final String name = enteredName.replaceAll(Pattern.quote("."), "")
@@ -80,13 +80,7 @@ public class Court {
                 .replaceAll(Pattern.quote("$"), "")
                 .replaceAll(Pattern.quote("["), "")
                 .replaceAll(Pattern.quote("]"), "");
-        ;
-        
-        db.child(name).child("name").setValue(name);
-        db.child(name).child("latitude").setValue(latitude);
-        db.child(name).child("longitude").setValue(longitude);
-        db.child(name).child("subscribers").setValue("");
-        db.child(name).child("usersAtCourt").setValue("");
+
 
 
         // check to make sure court is not already in db
@@ -99,19 +93,23 @@ public class Court {
                 boolean addToCourtSuccessful = true;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Court court = child.getValue(Court.class);
-                    //Log.i("COURT NAME", court.getName());
-                    //Log.i("NEW COURT NAME",name);
+                    Log.i("COURT NAME", court.getName());
+                    Log.i("NEW COURT NAME",name);
                     if (court.getName().toLowerCase().equals(name.toLowerCase())){
                         //court is already in db
                         //Todo fix - not updating - Court location activity
                         addToCourtSuccessful = false;
-                        //Log.i("addToCourtSuccessful1", Boolean.toString(addToCourtSuccessful));
+                        Log.i("addToCourtSuccessful1", Boolean.toString(addToCourtSuccessful));
                     }
                 }
 
                 //Log.i("addToCourtSuccessful2", Boolean.toString(addToCourtSuccessful));
 
                 if (addToCourtSuccessful) {
+                    db.child(name).child("name").setValue(name);
+                    db.child(name).child("latitude").setValue(latitude);
+                    db.child(name).child("longitude").setValue(longitude);
+                    db.child(name).child("usersAtCourt").setValue("");
                     Toast.makeText(AddCourtActivity.getAppContext(), "Court added", Toast.LENGTH_SHORT).show();
                 }
 
@@ -128,7 +126,7 @@ public class Court {
             }
         };
 
-        dbCourts.addValueEventListener(courtListener);
+        dbCourts.addListenerForSingleValueEvent(courtListener);
     }
 
 
