@@ -65,6 +65,7 @@ public class AddCourtActivity extends AppCompatActivity
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted;
     private static Context context;   // needed until app structure is finalized and can be placed in appropriate location
+    private Marker mNewCourt;  // used to hold new Court location - JS 11/27
 
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
@@ -150,11 +151,16 @@ public class AddCourtActivity extends AppCompatActivity
     public void onMapReady(GoogleMap map) {
         mMap = map;
 
+
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng point) {
-                mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(point).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                //mNewCourt.clear();
+                if (!(mNewCourt == null)){
+                    Log.i("MARKER EXISTS", "MARKER EXISTS");
+                    mNewCourt.remove();
+                }
+                mNewCourt = mMap.addMarker(new MarkerOptions().position(point).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
                 mMarkerLatLng = point;
             }
         });
