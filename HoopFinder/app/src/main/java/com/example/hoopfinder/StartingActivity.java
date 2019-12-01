@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.ViewGroup;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,7 +21,7 @@ public class StartingActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                Intent launchActivity1 = new Intent(StartingActivity.this, firebaseAuth.class);
+                Intent launchActivity1 = new Intent(StartingActivity.this, PermissionActivity.class);
                 startActivity(launchActivity1);
             }
         },5000);
