@@ -66,6 +66,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCD47IQU4Fzeot6LGupRLtnRDT3NSEwHhs" />
+        <service android:name = ".service"
+            android:exported="false"
+            android:enabled="true"/>
     </application>
 
 </manifest>
