@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Database;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import android.renderscript.Sampler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,6 +45,7 @@ public class CourtLocationActivity extends AppCompatActivity {
     public User currentUser = null;
     public FirebaseUser firebaseUser;
     public String _uid;
+    Context context;
 
     // mapping user name ->
     public HashMap<String, User> allUsers;
@@ -60,10 +64,13 @@ public class CourtLocationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_court_location);
 
+
         courtsTab = (Button)findViewById(R.id.courtsTab);
         subscriberTab =(Button)findViewById(R.id.subscriberTab);
         myAccount =(Button)findViewById(R.id.accountTab);
         mapButton =(Button)findViewById(R.id.CourtMap);
+
+
 
         courtsTab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,7 +112,30 @@ public class CourtLocationActivity extends AppCompatActivity {
         DatabaseReference userRef = databaseRef.child("Users");
 
 
+        // EXPERIMENT WITH SERVICE FOR RUNNING IN BACKGROUND - JS 12/27
+
+        if (!isMyServiceRunning(service.class)) {
+
+            Toast.makeText(this, "Started", Toast.LENGTH_LONG).show();
+            startService(new Intent(this, service.class));
+        }
+
+
     }
+
+
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// END EXPERIMENT
 
     public void getCurrentUser() {
 
