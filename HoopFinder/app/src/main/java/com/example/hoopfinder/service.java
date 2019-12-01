@@ -13,6 +13,7 @@ public class service extends IntentService{
      * constructor with a name for the worker thread.
      */
     public service() {
+
         super("ProximityCheckerService");
     }
 
@@ -28,7 +29,8 @@ public class service extends IntentService{
 
 
 
-        ProximityChecker.checkProximity(this);
+        ProximityChecker proximityChecker = new ProximityChecker();
+        proximityChecker.checkProximity(this);
 
     }
 
