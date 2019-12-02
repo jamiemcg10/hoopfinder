@@ -55,26 +55,55 @@ public class PermissionActivity extends AppCompatActivity
         Log.d("PermissionActivity", "Beginning of onCreate");
 //        locationTv = findViewById(R.id.location);
 //        proximityTv = findViewById(R.id.proximity);
-        // we add permissions we need to request location of the users
-        permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        permissions.add(Manifest.permission.SEND_SMS);
+
+        while (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                &&  ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(".PermissionActivity","1. We need permissions");
+            // we add permissions we need to request location of the users
+            permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            //permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+            //permissions.add(Manifest.permission.SEND_SMS);
 
 
-        permissionsToRequest = permissionsToRequest(permissions);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (permissionsToRequest.size() > 0) {
-                requestPermissions(permissionsToRequest.toArray(
-                        new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
+            permissionsToRequest = permissionsToRequest(permissions);
+            Log.d("PermissionActivity","2. Here");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (permissionsToRequest.size() > 0) {
+                    requestPermissions(permissionsToRequest.toArray(
+                            new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
+                }
             }
+
+
         }
+
+
+//        // we add permissions we need to request location of the users
+//        permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+//        //permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+//        permissions.add(Manifest.permission.SEND_SMS);
+//
+//
+//        permissionsToRequest = permissionsToRequest(permissions);
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            if (permissionsToRequest.size() > 0) {
+//                requestPermissions(permissionsToRequest.toArray(
+//                        new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
+//            }
+//        }
 
         // we build google api client
         googleApiClient = new GoogleApiClient.Builder(this).
                 addApi(LocationServices.API).
                 addConnectionCallbacks(this).
                 addOnConnectionFailedListener(this).build();
+
+
+        Intent launchActivity1 = new Intent(PermissionActivity.this, firebaseAuth.class);
+        startActivity(launchActivity1);
 
         Log.d("PermissionActivity", "End of onCreate");
 
@@ -148,6 +177,7 @@ public class PermissionActivity extends AppCompatActivity
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        Log.d("PermissionActivity", "onConnected");
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 &&  ActivityCompat.checkSelfPermission(this,
@@ -155,16 +185,15 @@ public class PermissionActivity extends AppCompatActivity
             Log.d(".PermissionActivity","We got here without permissions");
             // we add permissions we need to request location of the users
             permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-            permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-            permissions.add(Manifest.permission.SEND_SMS);
+            //permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+            //permissions.add(Manifest.permission.SEND_SMS);
 
 
             permissionsToRequest = permissionsToRequest(permissions);
-
+            Log.d("PermissionActivity","Here");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (permissionsToRequest.size() > 0) {
-                    requestPermissions(permissionsToRequest.toArray(
-                            new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ALL_PERMISSIONS_RESULT);
                 }
             }
 
@@ -217,8 +246,8 @@ public class PermissionActivity extends AppCompatActivity
 
         Log.d("PermissionActivity", "Made it to before intent");
 
-        Intent launchActivity1 = new Intent(PermissionActivity.this, firebaseAuth.class);
-        startActivity(launchActivity1);
+        //Intent launchActivity1 = new Intent(PermissionActivity.this, firebaseAuth.class);
+        //startActivity(launchActivity1);
 
         //startLocationUpdates();
         //proximityCheck();

@@ -25,5 +25,15 @@ public class StartingActivity extends AppCompatActivity {
                 startActivity(launchActivity1);
             }
         },5000);
+
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//        Intent launchActivity1 = new Intent(StartingActivity.this, PermissionActivity.class);
+//        startActivity(launchActivity1);
+
     }
 }
