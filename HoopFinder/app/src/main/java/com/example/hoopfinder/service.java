@@ -29,7 +29,7 @@ public class service extends IntentService{
 
 
 
-        ProximityChecker proximityChecker = new ProximityChecker();
+        ProximityChecker proximityChecker = new ProximityChecker(this);
         proximityChecker.checkProximity(this);
 
     }

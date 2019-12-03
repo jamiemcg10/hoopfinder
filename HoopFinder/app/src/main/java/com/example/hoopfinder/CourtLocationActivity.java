@@ -324,11 +324,11 @@ public class CourtLocationActivity extends AppCompatActivity
         DatabaseReference userRef = databaseRef.child("Users");
 
 
-        // EXPERIMENT WITH SERVICE FOR RUNNING IN BACKGROUND - JS 12/27
+        // START SERVICE IN BACKGROUND
 
         if (!isMyServiceRunning(service.class)) {
 
-            Toast.makeText(this, "Started", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "Started", Toast.LENGTH_LONG).show();
             startService(new Intent(this, service.class));
         }
 
@@ -347,7 +347,7 @@ public class CourtLocationActivity extends AppCompatActivity
         return false;
     }
 
-    /// END EXPERIMENT
+    // END OF SERVICE CODE
 
     public void getCurrentUser() {
 

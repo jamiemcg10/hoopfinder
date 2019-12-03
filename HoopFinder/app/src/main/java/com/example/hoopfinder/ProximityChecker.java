@@ -17,8 +17,11 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.room.Database;
 
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,27 +38,46 @@ public class ProximityChecker
     static LocationManager locationManager;
     static Location location;
     String TAG = "ProximityChecker";
-    User testUser = new User("jsmart", "jamie@bu.edu", "123456789", "GSU,Walnut Street Park", "");
+    Context context;
+    User currentUser;
+    DatabaseReference dbCourts;
 
+
+    public ProximityChecker(Context context){
+        this.context = context;
+
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        final String _uid = firebaseUser.getUid();
+        Log.d("User id",_uid);
+        dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
+
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("Users").child(_uid);
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                currentUser = dataSnapshot.getValue(User.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
 
     public void checkProximity(Context context) {
         while (true) {
 
             if (checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    Activity#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for Activity#requestPermissions for more details.
 
                 Log.d("ProximityChecker", "PERMISSIONS NOT GRANTED");
 
             }
-                Notification notification = new Notification("Hi!", "Still working!");
-                notification.sendNotification(context);
+                //UNCOMMENT OUT THE NEXT TWO LINES TO SEE THE SERVICE IN ACTION
+                //Notification notification = new Notification("Hi!", "Still working!");
+                //notification.sendNotification(context);
 
                 Log.d("Success?", "Yes!");
 
@@ -68,10 +90,14 @@ public class ProximityChecker
 
                     Log.d("Lat: ", Double.toString(location.getLatitude()));
                     Log.d("Long: ", Double.toString(location.getLongitude()));
+
+                    proximityToCourtCheck(dbCourts);
+                    newUserAtSubscribedCourtCheck(dbCourts);
+
                 }
 
                 try {
-                    Thread.sleep(10000);
+                    Thread.sleep(60000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -83,12 +109,12 @@ public class ProximityChecker
     /**
      * Checks to see if the current user is close to a court
      */
-    public void proximityCheck(){
+    public void proximityToCourtCheck(DatabaseReference dbCourts){
 
-        Log.d("MainActivity", "proximityCheck");
+        Log.d("ProximityChecker", "proximityCheck");
         // CHECK PROXIMITY TO COURTS
 
-        DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
+        //DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
         ValueEventListener courtListener = new ValueEventListener() {
             // DATABASE CAN ONLY BE READ THROUGH LISTENERS
             @Override
@@ -111,22 +137,27 @@ public class ProximityChecker
                         }*/
                     }
 
-                    // check if user has left court
-                    if (!(court.getUsersAtCourt() == null) && court.getUsersAtCourt().contains(testUser.getUser_id())){
-                        if (distanceInMeters >= 50){
-                            //user has left court
-                            String currentUsersAtCourt = court.getUsersAtCourt();
-                            ChangeUserCourtStatus removeTimer = new ChangeUserCourtStatus(testUser, court, currentUsersAtCourt, "REMOVE", googleApiClient);
-                            removeTimer.run();
+                    // check if user has arrived at court
+                    if (distanceInMeters < 50){
+                        //user is at court
+                        Log.d(TAG + " court", court.getUsersAtCourt()+ " " + Math.random());
+                        if ((court.getUsersAtCourt() == null) || !court.getUsersAtCourt().contains(currentUser.getUser_id())){
+                            String currentUsersAtCourt;
+                            if (court.getUsersAtCourt() == null){
+                                currentUsersAtCourt = "";
+                            } else {
+                                currentUsersAtCourt = court.getUsersAtCourt();}
+                            ChangeUserCourtStatus addTimer = new ChangeUserCourtStatus(currentUser, court, currentUsersAtCourt, "ADD", context);
+                            addTimer.run();
                         }
                     }
 
                     // check if user has left court
-                    if (!(court.getUsersAtCourt() == null) && court.getUsersAtCourt().contains(testUser.getUser_id())){
+                    if (!(court.getUsersAtCourt() == null) && court.getUsersAtCourt().contains(currentUser.getUser_id())){
                         if (distanceInMeters >= 50){
                             //user has left court
                             String currentUsersAtCourt = court.getUsersAtCourt();
-                            ChangeUserCourtStatus removeTimer = new ChangeUserCourtStatus(testUser, court, currentUsersAtCourt, "REMOVE", googleApiClient);
+                            ChangeUserCourtStatus removeTimer = new ChangeUserCourtStatus(currentUser, court, currentUsersAtCourt, "REMOVE", context);
                             removeTimer.run();
                         }
                     }
@@ -142,14 +173,51 @@ public class ProximityChecker
             }
         };
 
-        dbCourts.addValueEventListener(courtListener);
+        dbCourts.addListenerForSingleValueEvent(courtListener);
 
     }
 
     /**
      * Checks to see if a new user is at a court the user has subscribed to
      */
-    public void newUserAtSubscribedCourtCheck(){
+    public void newUserAtSubscribedCourtCheck(DatabaseReference dbCourts){
+        //DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
+
+        ChildEventListener listenerForNewUsersAtCourts = new ChildEventListener() {
+            // DATABASE CAN ONLY BE READ THROUGH LISTENERS
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String childName) {
+                // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
+                Court court = dataSnapshot.getValue(Court.class);
+                if (currentUser.getUser_courtsSubscribedTo().indexOf(court.getName()) >= 0) {   // user subscribed to court that changed
+                    Notification notification = new Notification("Court Alert","A new player is at " + court.getName()+"!" );
+                    notification.sendNotification(context);
+                    //Notification.sendNotification("Court alert!", "A new user is at " + court.getName()+"!");
+                }
+
+            }
+
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+
+        };
+
+        dbCourts.addChildEventListener(listenerForNewUsersAtCourts);
+
+    }
+
+
+    /**
+     * Checks to see if a player the user is subscribed to is at a court
+     */
+    public void subscribedUserAtCourtCheck(){
+        // NOT WORKING/FINISHED
         DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
 
         ChildEventListener listenerForNewUsersAtCourts = new ChildEventListener() {
@@ -158,7 +226,9 @@ public class ProximityChecker
             public void onChildChanged(DataSnapshot dataSnapshot, String childName) {
                 // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
                 Court court = dataSnapshot.getValue(Court.class);
-                if (testUser.getUser_courtsSubscribedTo().indexOf(court.getName()) >= 0) {   // user subscribed to court that changed
+                if (currentUser.getUser_courtsSubscribedTo().indexOf(court.getName()) >= 0) {   // user subscribed to court that changed
+                    Notification notification = new Notification("Court Alert","A new player is at " + court.getName()+"!" );
+                    notification.sendNotification(context);
                     //Notification.sendNotification("Court alert!", "A new user is at " + court.getName()+"!");
                 }
 
@@ -180,22 +250,12 @@ public class ProximityChecker
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-
-    }
-
+    public void onLocationChanged(Location location) {}
     @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
-
+    public void onStatusChanged(String s, int i, Bundle bundle) {}
     @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
+    public void onProviderEnabled(String s) {}
     @Override
-    public void onProviderDisabled(String s) {
+    public void onProviderDisabled(String s) {}
 
-    }
 }
