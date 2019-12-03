@@ -66,6 +66,8 @@ public class AddCourtActivity extends AppCompatActivity
     private boolean mLocationPermissionGranted;
     private static Context context;   // needed until app structure is finalized and can be placed in appropriate location
     private Marker mNewCourt;  // used to hold new Court location - JS 11/27
+    private Marker mCurrentPos;  // used to hold current position - JS 12/03
+
 
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
@@ -86,7 +88,7 @@ public class AddCourtActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        context = getApplicationContext();// save context to use elsewhere - needed until app structure is finalized and final location can be determined
+        //context = getApplicationContext();// save context to use elsewhere - needed until app structure is finalized and final location can be determined
 
         // Retrieve location and camera position from saved instance state.
         if (savedInstanceState != null) {
@@ -225,8 +227,13 @@ public class AddCourtActivity extends AppCompatActivity
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(mLastKnownLocation.getLatitude(),
                                             mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                            mMap.clear();
-                            mMap.addMarker(new MarkerOptions().position(mTempMapMarker));
+                            // mMap.clear();  - removed 12/3
+
+                            if (!(mCurrentPos == null)){
+                                Log.i("MARKER EXISTS", "MARKER EXISTS");
+                                mCurrentPos.remove();
+                            }
+                            //mCurrentPos = mMap.addMarker(new MarkerOptions().position(mTempMapMarker));
                             mMarkerLatLng = mTempMapMarker;
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
@@ -294,11 +301,14 @@ public class AddCourtActivity extends AppCompatActivity
                 // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Court court = child.getValue(Court.class);
+                    Log.d("AddCourtActivity name", court.getName() + Math.random());
                     LatLng mTempMapMarker = new LatLng(court.getLatitude(), court.getLongitude());
 
                     // if court is subscribed to by user, make marker green
+                    Log.d("AddCourtActivity", "In getAllCourts()" + Math.random());
+                    //mMap.addMarker(new MarkerOptions().position(mTempMapMarker).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+                    mMap.addMarker(new MarkerOptions().position(mTempMapMarker).icon(BitmapDescriptorFactory.fromResource(R.drawable.logo_marker)));
 
-                    mMap.addMarker(new MarkerOptions().position(mTempMapMarker));
                 }
             }
 
