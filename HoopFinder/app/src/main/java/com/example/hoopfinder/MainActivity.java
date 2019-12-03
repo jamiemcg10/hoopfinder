@@ -342,8 +342,8 @@ public class MainActivity extends AppCompatActivity
                         if (distanceInMeters >= 50){
                             //user has left court
                             String currentUsersAtCourt = court.getUsersAtCourt();
-                            ChangeUserCourtStatus removeTimer = new ChangeUserCourtStatus(testUser, court, currentUsersAtCourt, "REMOVE", googleApiClient);
-                            removeTimer.run();
+                            //ChangeUserCourtStatus removeTimer = new ChangeUserCourtStatus(testUser, court, currentUsersAtCourt, "REMOVE", googleApiClient);
+                            //removeTimer.run();
                         }
                     }
 
@@ -352,8 +352,8 @@ public class MainActivity extends AppCompatActivity
                         if (distanceInMeters >= 50){
                             //user has left court
                             String currentUsersAtCourt = court.getUsersAtCourt();
-                            ChangeUserCourtStatus removeTimer = new ChangeUserCourtStatus(testUser, court, currentUsersAtCourt, "REMOVE", googleApiClient);
-                            removeTimer.run();
+                            //ChangeUserCourtStatus removeTimer = new ChangeUserCourtStatus(testUser, court, currentUsersAtCourt, "REMOVE", googleApiClient);
+                            //removeTimer.run();
                         }
                     }
                 }

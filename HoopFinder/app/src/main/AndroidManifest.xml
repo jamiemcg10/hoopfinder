@@ -34,7 +34,7 @@
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+        <!--<activity android:name=".MainActivity" />-->
         <activity android:name=".CourtLocationActivity" />
         <activity android:name=".SubscriberListActivity" />
         <activity android:name=".StartingActivity">
