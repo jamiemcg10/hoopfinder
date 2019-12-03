@@ -127,16 +127,6 @@ public class ProximityChecker
                     courtLocation.setLongitude(court.getLongitude());
                     float distanceInMeters = courtLocation.distanceTo(location);
 
-                    if (distanceInMeters < 50) {
-                        // ADD USER TO LIST OF USERS AT COURT
-                        // if user not already in list at court
-                        /*if (!court.getUsersAtCourt().contains(testUser.getUser_id())) {
-                            String currentUsersAtCourt = court.getUsersAtCourt();
-                            ChangeUserCourtStatus addTimer = new ChangeUserCourtStatus(testUser, court, currentUsersAtCourt, "ADD", googleApiClient);
-                            addTimer.run();
-                        }*/
-                    }
-
                     // check if user has arrived at court
                     if (distanceInMeters < 50){
                         //user is at court
@@ -192,7 +182,6 @@ public class ProximityChecker
                 if (currentUser.getUser_courtsSubscribedTo().indexOf(court.getName()) >= 0) {   // user subscribed to court that changed
                     Notification notification = new Notification("Court Alert","A new player is at " + court.getName()+"!" );
                     notification.sendNotification(context);
-                    //Notification.sendNotification("Court alert!", "A new user is at " + court.getName()+"!");
                 }
 
             }
