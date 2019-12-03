@@ -35,17 +35,13 @@ public class PermissionActivity extends AppCompatActivity
     private Location location;
     private GoogleApiClient googleApiClient;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private LocationRequest locationRequest;
-    private static final long UPDATE_INTERVAL = 5000, FASTEST_INTERVAL = 5000; // = 5 seconds
     // lists for permissions
     private ArrayList<String> permissionsToRequest;
     private ArrayList<String> permissionsRejected = new ArrayList<>();
     private ArrayList<String> permissions = new ArrayList<>();
     // integer for permissions results request
     private static final int ALL_PERMISSIONS_RESULT = 1011;
-    private final String TAG = "com.example.hoopfinder";
-    private static Context context;
-    private User testUser;  // THIS WILL EVENTUALLY NEED TO BE THE ACTUAL USER
+    private final String TAG = "PermissionActivity";
 
 
     @Override
@@ -53,8 +49,6 @@ public class PermissionActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_permission);
         Log.d("PermissionActivity", "Beginning of onCreate");
-//        locationTv = findViewById(R.id.location);
-//        proximityTv = findViewById(R.id.proximity);
 
         while (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -98,10 +92,10 @@ public class PermissionActivity extends AppCompatActivity
 //        }
 
         // we build google api client
-        googleApiClient = new GoogleApiClient.Builder(this).
-                addApi(LocationServices.API).
-                addConnectionCallbacks(this).
-                addOnConnectionFailedListener(this).build();
+//        googleApiClient = new GoogleApiClient.Builder(this).
+//                addApi(LocationServices.API).
+//                addConnectionCallbacks(this).
+//                addOnConnectionFailedListener(this).build();
 
 
         Intent launchActivity1 = new Intent(PermissionActivity.this, firebaseAuth.class);
@@ -135,29 +129,30 @@ public class PermissionActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 
-        if (googleApiClient != null) {
-            googleApiClient.connect();
-        }
+//        if (googleApiClient != null) {
+//            googleApiClient.connect();
+//        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if (!checkPlayServices()) {
+//        if (!checkPlayServices()) {
 //            locationTv.setText("You need to install Google Play Services to use the App properly");
-        }
+//        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
+
         // stop location updates
-        if (googleApiClient != null  &&  googleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-            googleApiClient.disconnect();
-        }
+//        if (googleApiClient != null  &&  googleApiClient.isConnected()) {
+//            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+//            googleApiClient.disconnect();
+//        }
     }
 
     private boolean checkPlayServices() {
@@ -180,65 +175,11 @@ public class PermissionActivity extends AppCompatActivity
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.d("PermissionActivity", "onConnected");
-//        if (ActivityCompat.checkSelfPermission(this,
-//                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-//                &&  ActivityCompat.checkSelfPermission(this,
-//                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            Log.d(".PermissionActivity","We got here without permissions");
-//            // we add permissions we need to request location of the users
-//            permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-//            //permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-//            //permissions.add(Manifest.permission.SEND_SMS);
-//
-//
-//            permissionsToRequest = permissionsToRequest(permissions);
-//            Log.d("PermissionActivity","Here");
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                if (permissionsToRequest.size() > 0) {
-//                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ALL_PERMISSIONS_RESULT);
-//                }
-//            }
-//
-//
-//        }
-
-        // we build google api client
-//        googleApiClient = new GoogleApiClient.Builder(this).
-//                addApi(LocationServices.API).
-//                addConnectionCallbacks(this).
-//                addOnConnectionFailedListener(this).build();
-
-        // Permissions ok, we get last location
-        location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-
-//        if (location != null) {
-//            locationTv.setText("Latitude : " + location.getLatitude() + "\nLongitude : " + location.getLongitude());
-//        }
-//        else{
-//            locationTv.setText("No valid location");
-//            Location loc2 = new Location("");
-//            loc2.setLongitude(-71.103703);
-//            loc2.setLatitude(42.348775);
-//        }
 
 
 
-//        if (distanceInMeters < proximityThreshold) {
-//            proximityTv.setText("You are close : " + distanceInMeters + " meters away ");
-//
-//        }
-//        else {
-//            proximityTv.setText("You are not close : " + distanceInMeters + " meters away");
-//        }
+        //location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
-        //Log.d("PermissionActivity", "Made it to before intent");
-
-        //Intent launchActivity1 = new Intent(PermissionActivity.this, firebaseAuth.class);
-        //startActivity(launchActivity1);
-
-        //startLocationUpdates();
-        //proximityCheck();
-        //newUserAtSubscribedCourtCheck();
 
     }
 
@@ -289,128 +230,18 @@ public class PermissionActivity extends AppCompatActivity
                             return;
                         }
                     }
-                } else {
-                    if (googleApiClient != null) {
-                        googleApiClient.connect();
-                    }
                 }
+//                else {
+////                    if (googleApiClient != null) {
+////                        googleApiClient.connect();
+////                    }
+//                }
 
                 break;
         }
     }
 
-//    /**
-//     * This method sends a text notification with a specified message to a specified phone number
-//     * @param phoneNumber The number the text will be sent to
-//     * @param message The message that will be sent
-//     * @returns nothing
-//     */
-//    public void sendText(String phoneNumber, String message){
-//        SmsManager smgr = SmsManager.getDefault();
-//        smgr.sendTextMessage(phoneNumber,null,message,null,null);
-//
-//    }
 
-
-//    /**
-//     * Checks to see if the current user is close to a court
-//     */
-//    public void proximityCheck(){
-//
-//        Log.d("MainActivity", "proximityCheck");
-//        // CHECK PROXIMITY TO COURTS
-//        location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-//
-//        DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
-//        ValueEventListener courtListener = new ValueEventListener() {
-//            // DATABASE CAN ONLY BE READ THROUGH LISTENERS
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
-//                for (DataSnapshot child : dataSnapshot.getChildren()) {
-//                    Court court = child.getValue(Court.class);
-//                    Location courtLocation = new Location("");
-//                    courtLocation.setLatitude(court.getLatitude());
-//                    courtLocation.setLongitude(court.getLongitude());
-//                    float distanceInMeters = courtLocation.distanceTo(location);
-//
-//                    if (distanceInMeters < 50) {
-//                        // ADD USER TO LIST OF USERS AT COURT
-//                        // if user not already in list at court
-//                        /*if (!court.getUsersAtCourt().contains(testUser.getUser_id())) {
-//                            String currentUsersAtCourt = court.getUsersAtCourt();
-//                            ChangeUserCourtStatus addTimer = new ChangeUserCourtStatus(testUser, court, currentUsersAtCourt, "ADD", googleApiClient);
-//                            addTimer.run();
-//                        }*/
-//                    }
-//
-//                    // check if user has left court
-//                    if (!(court.getUsersAtCourt() == null) && court.getUsersAtCourt().contains(testUser.getUser_id())){
-//                        if (distanceInMeters >= 50){
-//                            //user has left court
-//                            String currentUsersAtCourt = court.getUsersAtCourt();
-//                            ChangeUserCourtStatus removeTimer = new ChangeUserCourtStatus(testUser, court, currentUsersAtCourt, "REMOVE", googleApiClient);
-//                            removeTimer.run();
-//                        }
-//                    }
-//
-//                    // check if user has left court
-//                    if (!(court.getUsersAtCourt() == null) && court.getUsersAtCourt().contains(testUser.getUser_id())){
-//                        if (distanceInMeters >= 50){
-//                            //user has left court
-//                            String currentUsersAtCourt = court.getUsersAtCourt();
-//                            ChangeUserCourtStatus removeTimer = new ChangeUserCourtStatus(testUser, court, currentUsersAtCourt, "REMOVE", googleApiClient);
-//                            removeTimer.run();
-//                        }
-//                    }
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                // Getting a court failed
-//                Log.w(TAG, "loadCourt:onCancelled", databaseError.toException());
-//
-//            }
-//        };
-//
-//        dbCourts.addValueEventListener(courtListener);
-//
-//    }
-
-//    /**
-//     * Checks to see if a new user is at a court the user has subscribed to
-//     */
-//    public void newUserAtSubscribedCourtCheck(){
-//        DatabaseReference dbCourts = FirebaseDatabase.getInstance().getReference().child("Courts");  // GET COURTS FROM FIREBASE DB
-//
-//        ChildEventListener listenerForNewUsersAtCourts = new ChildEventListener() {
-//            // DATABASE CAN ONLY BE READ THROUGH LISTENERS
-//            @Override
-//            public void onChildChanged(DataSnapshot dataSnapshot, String childName) {
-//                // WILL RUN WHEN METHOD IS FIRST RUN AND THEN AGAIN WHENEVER COURTS "TABLE" CHANGES
-//                Court court = dataSnapshot.getValue(Court.class);
-//                if (testUser.getUser_courtsSubscribedTo().indexOf(court.getName()) >= 0) {   // user subscribed to court that changed
-//                    //Notification.sendNotification("Court alert!", "A new user is at " + court.getName()+"!");
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {}
-//
-//        };
-//
-//        dbCourts.addChildEventListener(listenerForNewUsersAtCourts);
-//
-//    }
 
 
 }

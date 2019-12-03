@@ -53,33 +53,7 @@ public class service extends IntentService{
 }
 
 
-//public class service extends Service {
-//    @Override
-//    public IBinder onBind(Intent intent) {
-//        return null;
-//    }
-//    @Override
-//    public void onCreate() {
-//        super.onCreate();
-//    }
-//    @TargetApi(Build.VERSION_CODES.O)
-//    @Override
-//    public int onStartCommand(Intent intent, int flags, int startId) {
-//        Toast.makeText(this, "Notification Service started by user.", Toast.LENGTH_LONG).show();
-//        Log.d("Tutorialspoint.com","Services is working background");
-//        ProximityChecker.checkProximity();
-//
-//        return START_STICKY;
-//    }
-//
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//        Toast.makeText(this, "Notification Service destroyed by user.", Toast.LENGTH_LONG).show();
-//    }
-//
-//
-//}
+
 
 
 
