@@ -340,9 +340,19 @@ public class SubscribeToCourtActivity extends AppCompatActivity
                         if (dataSnapshot.getKey().equals("user_courtsSubscribedTo")) {
                             String userCourtsSubscribedTo = dataSnapshot.getValue(String.class);
                             Log.d(TAG, "HAVE I FOUND THE COURTS LIST??");
-                            String updatedList = mCourtName + "," + userCourtsSubscribedTo;
-                            Log.d(TAG, updatedList);
-                            User.genericSubscribeToCourt(updatedList, _uid);
+                            if (!userCourtsSubscribedTo.contains(mCourtName)) {
+                                // SUBSCRIBE
+                                String updatedList = mCourtName + "," + userCourtsSubscribedTo;
+                                Log.d(TAG, updatedList);
+                                User.genericSubscribeToCourt(updatedList, _uid);
+                            }
+
+                            if (userCourtsSubscribedTo.contains(mCourtName)){
+                                // ALREADY SUBSCRIBED, UNSUBSCRIBE
+                                String updatedList = userCourtsSubscribedTo.replace(mCourtName + ",", "");
+                                Log.d(TAG, updatedList);
+                                User.genericSubscribeToCourt(updatedList, _uid);
+                            }
                         }
 
                     } else {
