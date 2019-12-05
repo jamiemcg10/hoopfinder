@@ -81,13 +81,13 @@ public class ChangeUserCourtStatus extends TimerTask {
 
         if (this.action=="ADD" & userLocation.distanceTo(courtLocation) < 50) {
             db.child("Courts").child(court.getName()).child("usersAtCourt").setValue(currentUsersAtCourt + currentUser.getUser_id() + ",");
-            Notification added = new Notification("Welcome!", "You have been checked into + " + court.getName());
+            Notification added = new Notification("Welcome!", "You have been checked into " + court.getName());
             added.sendNotification(context);
         }
 
         if (this.action == "REMOVE" & userLocation.distanceTo(courtLocation) >= 50){
             db.child("Courts").child(court.getName()).child("usersAtCourt").setValue(currentUsersAtCourt.replace(currentUser.getUser_id() + ",",""));
-            Notification removed = new Notification("Goodbye!", "You have left + " + court.getName());
+            Notification removed = new Notification("Goodbye!", "You have left " + court.getName());
             removed.sendNotification(context);
         }
     }

@@ -88,7 +88,7 @@ public class AddCourtActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //context = getApplicationContext();// save context to use elsewhere - needed until app structure is finalized and final location can be determined
+        context = getApplicationContext();// save context to use elsewhere - needed until app structure is finalized and final location can be determined
 
         // Retrieve location and camera position from saved instance state.
         if (savedInstanceState != null) {

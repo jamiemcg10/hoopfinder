@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity
         Location testLocation = new Location("");
 
         // add court at GSU
-        Court.addCourt("GSU", 42.350661, -71.108064);
+        //Court.addCourt("GSU", 42.350661, -71.108064);
 
         // test vars for now
         double testLongitude = -71.0964750;
