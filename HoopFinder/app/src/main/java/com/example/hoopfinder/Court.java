@@ -8,6 +8,7 @@
 
 package com.example.hoopfinder;
 
+import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 import android.widget.Toast;
@@ -143,7 +144,7 @@ public class Court {
      * Adds a set of pre-defined courts to the database
      * @return nothing
      */
-    public static void batchAddCourts(){
+    public static void batchAddCourts(Context context){
         addCourt("North Lawton Playground", 42.349743, -71.127213);
         addCourt("Titus Sparrow Park", 42.343640, -71.080235);
         addCourt("Peters Park", 42.343150, -71.067338);

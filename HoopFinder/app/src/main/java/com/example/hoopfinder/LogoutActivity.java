@@ -46,7 +46,7 @@ public class LogoutActivity extends AppCompatActivity {
         courtsTab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent launchActivity1 = new Intent(LogoutActivity.this, CourtLocationActivity.class);
+                Intent launchActivity1 = new Intent(LogoutActivity.this, SubscribeToCourtActivity.class);
                 startActivity(launchActivity1);
             }
         });

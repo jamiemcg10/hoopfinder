@@ -70,6 +70,8 @@ public class ProximityChecker
     public void checkProximity(Context context) {
         while (true) {
 
+
+
             if (checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
                 Log.d("ProximityChecker", "PERMISSIONS NOT GRANTED");
@@ -90,6 +92,7 @@ public class ProximityChecker
 
                     Log.d("Lat: ", Double.toString(location.getLatitude()));
                     Log.d("Long: ", Double.toString(location.getLongitude()));
+
 
                     proximityToCourtCheck(dbCourts);
                     newUserAtSubscribedCourtCheck(dbCourts);
@@ -126,6 +129,10 @@ public class ProximityChecker
                     courtLocation.setLatitude(court.getLatitude());
                     courtLocation.setLongitude(court.getLongitude());
                     float distanceInMeters = courtLocation.distanceTo(location);
+
+                    if (currentUser == null){
+                        return;
+                    }
 
                     // check if user has arrived at court
                     if (distanceInMeters < 50){
