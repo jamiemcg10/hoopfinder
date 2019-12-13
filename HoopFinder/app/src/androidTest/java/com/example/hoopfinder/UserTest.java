@@ -46,14 +46,19 @@ public class UserTest {
     }
 
     @Test
-    public void testGenericSubscribeToCourt() {
+    public void testSubscribeToCourt() {
         final String currentUid = "wAhy0JiIicS0B0XJSEewDbAsdT83";
         final String testCourt = "Boston Common";
 
-        User.genericSubscribeToCourt(testCourt, currentUid);
+        User currentUser = new User(currentUid,
+                "blah",
+                "blah",
+                "",
+                "");
 
         // check to make sure they are in DB
         DatabaseReference dbUsers = FirebaseDatabase.getInstance().getReference().child("Users");
+        currentUser.subscribeToCourt(testCourt, dbUsers);
         dbUsers.addValueEventListener(new ValueEventListener() {
 
             @Override
@@ -62,7 +67,7 @@ public class UserTest {
                 boolean courtSubscribed = false;
                 for (DataSnapshot child : dataSnapshot.getChildren()){
                     User user = child.getValue(User.class);
-                    if (user.getUser_courtsSubscribedTo().contains(testCourt)){
+                    if (user.getCourtsSubscribedTo().contains(testCourt)){
                         courtSubscribed = true;
                     }
                 }
@@ -75,14 +80,20 @@ public class UserTest {
     }
 
     @Test
-    public void testGenericSubscribeToUser() {
+    public void testSubscribeToUser() {
         final String currentUid = "wAhy0JiIicS0B0XJSEewDbAsdT83";
         final String testUser = "F7SpyoNZCtZHnU6bAGTNcjCpu";
 
-        User.genericSubscribeToUser(testUser, currentUid);
+        User currentUser = new User(currentUid,
+                "blah",
+                "blah",
+                "",
+                "");
+
 
         // check to make sure they are in DB
         DatabaseReference dbUsers = FirebaseDatabase.getInstance().getReference().child("Users");
+        currentUser.subscribeToUser(testUser, dbUsers);
         dbUsers.addValueEventListener(new ValueEventListener() {
 
             @Override
@@ -91,7 +102,7 @@ public class UserTest {
                 boolean userSubscribed = false;
                 for (DataSnapshot child : dataSnapshot.getChildren()){
                     User user = child.getValue(User.class);
-                    if (user.getUser_usersSubscribedTo().contains(testUser)){
+                    if (user.getUserSubscribedTo().contains(testUser)){
                         userSubscribed = true;
                     }
                 }

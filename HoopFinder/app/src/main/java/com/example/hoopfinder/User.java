@@ -76,7 +76,7 @@ public class User {
         return this.user_courtsSubscribedTo;
     }
 
-    public String getUser_usersSubscribedTo() {
+    public String getUserSubscribedTo() {
         return this.user_usersSubscribedTo;
     }
 }
